@@ -4,6 +4,15 @@
 
 KarakuriMotors motors;
 
+#define Switch 13
+#define Encoder 12
+
+
+void Actions::init(){
+    pinMode(Switch, INPUT);
+    pinMode(Encoder, INPUT);
+}
+
 void Actions::movimientos(int comando, int argument)
 {
     switch (comando)
@@ -80,4 +89,30 @@ void Actions::tele(int estado)
         motors.setSpeeds(0, 0);
         delay(2);
     }
+}
+
+void Actions::home()
+{
+      Serial.println(digitalRead(Switch));
+      
+      if(digitalRead(Switch)!=HIGH){
+
+        motors.setSpeed(0);
+         Serial.println("Button Push");
+      }
+
+      else{
+         Serial.println("Button No Push - Activate Motor");
+         motors.setSpeed(100); // SET TEST SPEED
+
+         while(digitalRead(Switch)!=HIGH){
+        
+        }
+
+         motors.setSpeed(0);
+         Serial.println("Button Push");
+        
+      }
+
+
 }

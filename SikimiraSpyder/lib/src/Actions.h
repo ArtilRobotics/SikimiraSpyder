@@ -18,14 +18,17 @@ class Actions
         PAUSA = 80,
         ADELANTE = 70,
         ATRAS = 66,
+
     };
 
 public:
+    void init();
     void movimientos(int comando, int argument);
     void pausa(int argument);
     void adelante(int argument);
     void atras(int argument);
     void tele(int estado);
+    void home();
 
 private:
 };

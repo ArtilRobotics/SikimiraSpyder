@@ -1,10 +1,17 @@
 #include <Arduino.h>
 #include <KarakuriMotors.h>
 #include <KarakuriBluetooth.h>
+#include <Actions.h>
 
-KarakuriMotors motors;
+Actions Acciones;
+KarakuriMotors motors1;
 KarakuriBluetooth BTS;
-//Henry 
+
+//Partes para Boton Home
+
+
+////////////
+
 String strT = "";
 const char separatorT = ',';
 const int dataLengthT = 3;
@@ -15,7 +22,9 @@ void setup()
   // put your setup code here, to run once:
   Serial.begin(115200);
   BTS.Start();
-  // motors.setSpeeds(0,0);
+  motors1.setSpeed(0);
+  Acciones.init();
+
 }
 
 void loop()
@@ -47,17 +56,31 @@ void loop()
     // frenar(1);
     break;
   case 1:
-    Serial.println("Sistema bloques DATOS:   ");
+    //Serial.println("Sistema bloques DATOS:   ");
     // Recibe();
     //  Aquí se pone la funcione de movimientos en la cual dependiendo de cual sea selecciona que realiza el carrito
     // act.movimientos((int)dato[1], (int)dato[2]);
     // frenar(10);
     break;
-  default:
+
+    case 2:
+    //Serial.println("Sistema bloques DATOS:   ");
+    //bool Status_St=digitalRead(Switch);
+    Acciones.home();
+
+    break;
+
+    default:
     // colocar movimientos pero en cada instante
     Serial.println("Sistema tele operado");
     // act.tele((int)dato[1]);
     datoT[0] = 0;
-    break;
+
+    //Program Home
+
+
   }
+
 }
+
+

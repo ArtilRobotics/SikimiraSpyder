@@ -21,8 +21,7 @@ class KarakuriMotors
 public:
     static void flipLeftMotor(bool flip);
     static void flipRightMotor(bool flip);
-    static void setLeftSpeed(int16_t speed);
-    static void setRightSpeed(int16_t speed);
+    static void setSpeed(int16_t speed);
     /**
      * @brief Set the Speeds object
      * 

@@ -1,15 +1,15 @@
 #include <KarakuriMotors.h>
 #include <Arduino.h>
 
-#define BIN1 25
-#define BIN2 26
-#define PWM_B 33
+//#define BIN1 25
+//#define BIN2 26
+//#define PWM_B 33
 
-#define AIN1 14
-#define AIN2 12
-#define PWM_A 13
+#define AIN1 33
+#define AIN2 32
+#define PWM_A 35
 
-#define STBY 27
+#define STBY 25
 #define Vmax 255
 
 static bool flipLeft = false;
@@ -50,13 +50,14 @@ void KarakuriMotors::init2()
     pinMode(STBY, OUTPUT);
     pinMode(AIN1, OUTPUT);
     pinMode(AIN2, OUTPUT);
-    pinMode(BIN1, OUTPUT);
-    pinMode(BIN2, OUTPUT);
+    //pinMode(BIN1, OUTPUT);
+    //pinMode(BIN2, OUTPUT);
+
     // Setup timer and attach timer to a led pin
     ledcSetup(CHANNEL_0, BASE_FREQ, TIMER_13_BIT);
     ledcSetup(CHANNEL_1, BASE_FREQ, TIMER_13_BIT);
     ledcAttachPin(PWM_A, CHANNEL_0);
-    ledcAttachPin(PWM_B, CHANNEL_1);
+    //ledcAttachPin(PWM_B, CHANNEL_1);
 }
 
 // enable/disable flipping of left motor
@@ -72,37 +73,7 @@ void KarakuriMotors::flipRightMotor(bool flip)
 }
 
 // set speed for left motor; speed is a number between -255 and 255
-void KarakuriMotors::setLeftSpeed(int16_t speed)
-{
-    init();
-    digitalWrite(STBY, HIGH);
-    bool reverse = 0;
-
-    if (speed < 0)
-    {
-        speed = -speed; // Make speed a positive quantity.
-        reverse = 1;    // Preserve the direction.
-    }
-    if (speed > 255) // Max PWM duty cycle.
-    {
-        speed = 255;
-    }
-
-    if (reverse ^ flipLeft)
-    {
-        digitalWrite(BIN1, HIGH);
-        digitalWrite(BIN2, LOW);
-    }
-    else
-    {
-        digitalWrite(BIN1, LOW);
-        digitalWrite(BIN2, HIGH);
-    }
-    analogWriteESP(CHANNEL_1, speed);
-}
-
-// set speed for left motor; speed is a number between -255 and 255
-void KarakuriMotors::setRightSpeed(int16_t speed)
+void KarakuriMotors::setSpeed(int16_t speed)
 {
     init();
     digitalWrite(STBY, HIGH);
@@ -132,12 +103,6 @@ void KarakuriMotors::setRightSpeed(int16_t speed)
 }
 
 // set speed for both motors
-void KarakuriMotors::setSpeeds(int16_t leftSpeed, int16_t rightSpeed)
-{
-    digitalWrite(STBY, HIGH);
-    setLeftSpeed(leftSpeed);
-    setRightSpeed(rightSpeed);
-}
 
 void KarakuriMotors::attenuatedSpeeds(float leftSpeed,int16_t rightSpeed)
 {
@@ -148,15 +113,11 @@ void KarakuriMotors::attenuatedSpeeds(float leftSpeed,int16_t rightSpeed)
         
         velocitysmoothed_R = (rightSpeed*0.05)+(velocityPrev_R*0.95);
         velocityPrev_R = velocitysmoothed_R;
-        setRightSpeed(velocitysmoothed_R);
+        setSpeed(velocitysmoothed_R);
 
         velocitysmoothed_L = (leftSpeed*0.05)+(velocityPrev_L*0.95);
         velocityPrev_L = velocitysmoothed_L;
 
-        setLeftSpeed(velocitysmoothed_L);
-        Serial.print(leftSpeed);
-        Serial.print(", ");
-        Serial.println(velocitysmoothed_L);
         //delay(10);
         if (velocitysmoothed_R<rightSpeed+0.5 && velocitysmoothed_R>rightSpeed-0.5)
         {
