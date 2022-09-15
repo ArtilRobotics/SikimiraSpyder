@@ -72,7 +72,7 @@ void  startWifi(){
     delay(500);
   }
   Serial.print("Wifi RSSI=");
-  Serial.println(WiFi.RSSI());
+  //Serial.println(WiFi.RSSI());
 }
 
 
