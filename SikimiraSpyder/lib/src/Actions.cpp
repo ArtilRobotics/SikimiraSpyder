@@ -4,8 +4,8 @@
 
 KarakuriMotors motors;
 
-#define Switch 13
-#define Encoder 12
+#define Switch 35
+#define Encoder 32
 
 
 void Actions::init(){
@@ -105,14 +105,10 @@ void Actions::home()
          Serial.println("Button No Push - Activate Motor");
          motors.setSpeed(100); // SET TEST SPEED
 
-         while(digitalRead(Switch)!=HIGH){
-        
-        }
-
+         while(digitalRead(Switch)==HIGH){}
+         
          motors.setSpeed(0);
          Serial.println("Button Push");
         
       }
-
-
 }

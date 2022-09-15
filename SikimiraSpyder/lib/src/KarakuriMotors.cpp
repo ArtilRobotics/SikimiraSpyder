@@ -5,11 +5,11 @@
 //#define BIN2 26
 //#define PWM_B 33
 
-#define AIN1 33
-#define AIN2 32
-#define PWM_A 35
+#define AIN1 25
+#define AIN2 26
+#define PWM_A 33
 
-#define STBY 25
+#define STBY 27
 #define Vmax 255
 
 static bool flipLeft = false;
@@ -20,10 +20,10 @@ static bool flipRight = false;
 #define CHANNEL_1 1
 
 // use 13 bit precision for LED_C timer
-#define TIMER_13_BIT 13
+#define TIMER_13_BIT 8
 
 // use 50 KHz as a  base frequency
-#define BASE_FREQ 50000
+#define BASE_FREQ 5000
 
 int brightness = 0; // how bright the LED is
 int fadeAmount = 5; // how many points to fade the LED by
@@ -55,7 +55,7 @@ void KarakuriMotors::init2()
 
     // Setup timer and attach timer to a led pin
     ledcSetup(CHANNEL_0, BASE_FREQ, TIMER_13_BIT);
-    ledcSetup(CHANNEL_1, BASE_FREQ, TIMER_13_BIT);
+    //ledcSetup(CHANNEL_1, BASE_FREQ, TIMER_13_BIT);
     ledcAttachPin(PWM_A, CHANNEL_0);
     //ledcAttachPin(PWM_B, CHANNEL_1);
 }
