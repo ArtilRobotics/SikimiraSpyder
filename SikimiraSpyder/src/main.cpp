@@ -29,8 +29,33 @@ int datoTOFF[2];
 
 int ledState = LOW; 
 int ledPin = 2 ;
+int Button = 34 ;
+
+
 long previousMillis = 0;
   long intervalScan = 1000; 
+//%%%%
+
+volatile int contador = 0;
+int sensor = 19;
+long lenght;
+bool directtionM=false;
+int n_holes=20;
+float pi=3.1416;
+float radius=2.54;
+float revs = 0;
+
+long previousMillis2 = 0;
+  long intervalScan2 = 500; 
+
+long previousMillis3 = 0;
+  long intervalScan3 = 1000; 
+
+
+  long previousMillis4 = 0;
+  long intervalScan4 = 200; 
+
+
 //////////////////////////////////////////////////
 
 
@@ -97,10 +122,10 @@ boolean array_cmp(int *a, int *b, int len_a, int len_b){
      datoCC[1] = timeinfo.tm_min;
     
     bool Status = array_cmp(datoC,datoCC,2,2);
-     Serial.print(datoCC[0]);
-     Serial.print(":");
-     Serial.println(datoCC[1]);
-     Serial.println(Status);
+     //Serial.print(datoCC[0]);
+     //Serial.print(":");
+     //Serial.println(datoCC[1]);
+     //Serial.println(Status);
 
     return Status;
   }
@@ -128,12 +153,36 @@ boolean array_cmp(int *a, int *b, int len_a, int len_b){
   }
 
 
+///%%%%%%%%%%%%%%%%%%%Funciones Posicion
+
+void moveSpyder(int intervalTime, bool directtionBool){
+
+        float temp =float (intervalTime)/1000.0f;
+       
+        float dp=revs*temp*2*pi*radius;
+
+        if(directtionBool==true){lenght=lenght+dp;}
+        else{lenght=lenght-dp;}
+
+        if(lenght<=0){lenght=0;}
+  }
+
+  void speedSpyder(int intervalTime){
+      revs=float (contador)/float (n_holes)*(1000.0f/ float(intervalTime));
+      contador=0;
+    }
+
+void interrupcion() {
+  contador++;
+  }
+
 
 
 ////////////////////////////////////////////////////
 void setup()
 {
   // put your setup code here, to run once:
+  pinMode(Button, INPUT);
   Serial.begin(115200);
   BTS.Start();
   Acciones.init();
@@ -153,12 +202,58 @@ void setup()
 
      datoTOFF[0] = datoTON[0];
      datoTOFF[1] =  datoTON[1]+5;
-////
+/////%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+  
+  attachInterrupt(sensor, interrupcion, FALLING);
+
+////////////////////////////////////////////////////////////////
 }
 
 void loop()
 {
+
+
+  
+if(digitalRead(Button)==HIGH){ directtionM=true;}
+else{directtionM=false;}
+
+  unsigned long currentMillis2 = millis();    // Se toma el tiempo actual
+
+ 
+      if (currentMillis2 - previousMillis2 > intervalScan2){
+
+       previousMillis2 = currentMillis2;
+ 
+        speedSpyder(intervalScan2);
+        
+      }
+
+ unsigned long currentMillis3 = millis();    // Se toma el tiempo actual
+      
+      
+      if (currentMillis3 - previousMillis3 > intervalScan3){
+      previousMillis3 = currentMillis3;
+      
+      Serial.print("Las revoluciones son: ");
+      Serial.print(revs);
+      Serial.print(" La Posicion es: ");
+      Serial.println(lenght);
+      //Serial.println(digitalRead(Button));
+      }
+
+
+ unsigned long currentMillis4 = millis();    // Se toma el tiempo actual
+
+ 
+      if (currentMillis4 - previousMillis4 > intervalScan4){
+
+        previousMillis4 = currentMillis4;
+
+        moveSpyder(intervalScan4, directtionM);
+  
+      }
+
   ///////////////Timer///////////////////////////////////
 
     unsigned long currentMillis = millis();    // Se toma el tiempo actual

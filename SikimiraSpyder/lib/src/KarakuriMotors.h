@@ -30,6 +30,8 @@ public:
      */
     static void setSpeeds(int16_t leftSpeed, int16_t rightSpeed);
     void attenuatedSpeeds(float leftSpeed,int16_t rightSpeed);
+    
+    //float lenght;
 
 private:
     static inline void init()
@@ -46,5 +48,6 @@ private:
 
     float _rightSpeed;
     float _leftSpeed;
+    
 };
 #endif
