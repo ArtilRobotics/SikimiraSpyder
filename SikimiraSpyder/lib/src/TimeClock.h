@@ -1,9 +1,9 @@
 /**
- * @file KarakuriMotors.h
- * @author Marcelo Ortiz (marcelo@artilrobotics.com)
+ * @file TimeClock.h
+ * @author Henry Puruncajas (henrypurun1510@gmail.com)
  * @brief 
  * @version 0.1
- * @date 2022-05-18
+ * @date 2022-09-17
  * @endcode
  * 
  * @copyright Copyright (c) 2022
