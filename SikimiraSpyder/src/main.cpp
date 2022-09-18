@@ -2,48 +2,33 @@
 #include <KarakuriMotors.h>
 #include <KarakuriBluetooth.h>
 #include <Actions.h>
+#include <TimeClock.h>
 //
 
 #include <WiFi.h>
-#include "time.h"
 
-const char * ssid="Casa_PP_T";
+const char * ssid="Casa_PP";
 const char * wifipw="Casa151098#";
-
-//
 
 
 Actions Acciones;
 KarakuriMotors motors1;
 KarakuriBluetooth BTS;
+TimeClock WifiTime;
 
 String strT = "";
 const char separatorT = ',';
 const int dataLengthT = 3;
 int datoT[dataLengthT];
 
-int datoTC[2];
-int datoCC[2];
-int datoTON[2];
-int datoTOFF[2];
-
 int ledState = LOW; 
 int ledPin = 2 ;
-int Button = 34 ;
 
 
 long previousMillis = 0;
-  long intervalScan = 1000; 
+long intervalScan = 1000; 
 //%%%%
 
-volatile int contador = 0;
-int sensor = 19;
-long lenght;
-bool directtionM=false;
-int n_holes=20;
-float pi=3.1416;
-float radius=2.54;
-float revs = 0;
 
 long previousMillis2 = 0;
   long intervalScan2 = 500; 
@@ -55,39 +40,7 @@ long previousMillis3 = 0;
   long previousMillis4 = 0;
   long intervalScan4 = 200; 
 
-
-//////////////////////////////////////////////////
-
-
-void setTimezone(String timezone){
-  //Serial.printf("  Setting Timezone to %s\n",timezone.c_str());
-  setenv("TZ",timezone.c_str(),1);  //  Now adjust the TZ.  Clock settings are adjusted to show the new local time
-  tzset();
-}
-
-void initTime(String timezone){
-  struct tm timeinfo;
-
-  //Serial.println("Setting up time");
-  configTime(0, 0, "pool.ntp.org");    // First connect to NTP server, with 0 TZ offset
-  if(!getLocalTime(&timeinfo)){
-    Serial.println("  Failed to obtain time");
-    return;
-  }
-  //Serial.println("  Got the time from NTP");
-  // Now we can set the real timezone
-  setTimezone(timezone);
-}
-
-void printLocalTime(){
-  struct tm timeinfo;
-  if(!getLocalTime(&timeinfo)){
-    Serial.println("Failed to obtain time 1");
-    //return;
-  }
- // Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S zone %Z %z ");
-  Serial.println(&timeinfo, "%H:%M:%S");
-}
+long max_lenght;
 
 void  startWifi(){
   WiFi.begin(ssid, wifipw);
@@ -101,122 +54,43 @@ void  startWifi(){
 }
 
 
-boolean array_cmp(int *a, int *b, int len_a, int len_b){
-      int n;
-
-      // if their lengths are different, return false
-      if (len_a != len_b) return false;
-
-      // test each element to be the same. if not, return false
-      for (n=0;n<len_a;n++) if (a[n]!=b[n]) return false;
-
-      //ok, if we have not returned yet, they are equal :)
-      return true;
-}
-
-  bool Compare_Time( int datoC[2]){
-    struct tm timeinfo;
-    if(!getLocalTime(&timeinfo)){}
-  
-     datoCC[0] = timeinfo.tm_hour;
-     datoCC[1] = timeinfo.tm_min;
-    
-    bool Status = array_cmp(datoC,datoCC,2,2);
-     //Serial.print(datoCC[0]);
-     //Serial.print(":");
-     //Serial.println(datoCC[1]);
-     //Serial.println(Status);
-
-    return Status;
-  }
-
-  void setTimeON( int datoC[2]){
-
-     datoTON[0] = datoC[1];
-     datoTON[1] = datoC[2];
-
-     Serial.print("Set ON time to:");
-     Serial.print(datoTON[0]);
-     Serial.print(":");
-     Serial.println(datoTON[1]);
-  }
-
-  void setTimeOFF( int datoC[2]){
-
-     datoTOFF[0] = datoC[1];
-     datoTOFF[1] = datoC[2];
-
-     Serial.print("Set OFF time to:");
-     Serial.print(datoTOFF[0]);
-     Serial.print(":");
-     Serial.println(datoTOFF[1]);
-  }
-
-
-///%%%%%%%%%%%%%%%%%%%Funciones Posicion
-
-void moveSpyder(int intervalTime, bool directtionBool){
-
-        float temp =float (intervalTime)/1000.0f;
-       
-        float dp=revs*temp*2*pi*radius;
-
-        if(directtionBool==true){lenght=lenght+dp;}
-        else{lenght=lenght-dp;}
-
-        if(lenght<=0){lenght=0;}
-  }
-
-  void speedSpyder(int intervalTime){
-      revs=float (contador)/float (n_holes)*(1000.0f/ float(intervalTime));
-      contador=0;
-    }
-
-void interrupcion() {
-  contador++;
-  }
-
-
-
-////////////////////////////////////////////////////
+//////////////////////////////////////////////////////
 void setup()
 {
   // put your setup code here, to run once:
-  pinMode(Button, INPUT);
   Serial.begin(115200);
+  startWifi();
   BTS.Start();
   Acciones.init();
   motors1.setSpeed(0);
-
+  WifiTime.init();
 //////
- startWifi();
-
-  initTime("COT5");   // Set for Melbourne/AU
-  printLocalTime();
   
   pinMode(ledPin, OUTPUT);
   ledState == LOW;
 
-     datoTON[0] = 16;
-     datoTON[1] = 40;
+     WifiTime.datoTON[0] = 16;
+     WifiTime.datoTON[1] = 40;
 
-     datoTOFF[0] = datoTON[0];
-     datoTOFF[1] =  datoTON[1]+5;
-/////%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-  
-  attachInterrupt(sensor, interrupcion, FALLING);
+     WifiTime.datoTOFF[0] = WifiTime.datoTON[0];
+     WifiTime.datoTOFF[1] =  WifiTime.datoTON[1]+5;
+}
 
 ////////////////////////////////////////////////////////////////
-}
 
 void loop()
 {
+  if((motors1.lenght<=0 && motors1.directionM==false) || digitalRead(Acciones.Switch)== LOW){
+    motors1.setSpeed(0);
+    motors1.lenght=0;
+   
+  }
+
+  else if(motors1.lenght>max_lenght && motors1.directionM){
+    motors1.setSpeed(0);
+  }
 
 
-  
-if(digitalRead(Button)==HIGH){ directtionM=true;}
-else{directtionM=false;}
 
   unsigned long currentMillis2 = millis();    // Se toma el tiempo actual
 
@@ -225,7 +99,7 @@ else{directtionM=false;}
 
        previousMillis2 = currentMillis2;
  
-        speedSpyder(intervalScan2);
+        motors1.speedSpyder(intervalScan2);
         
       }
 
@@ -236,9 +110,9 @@ else{directtionM=false;}
       previousMillis3 = currentMillis3;
       
       Serial.print("Las revoluciones son: ");
-      Serial.print(revs);
+      Serial.print(motors1.revs);
       Serial.print(" La Posicion es: ");
-      Serial.println(lenght);
+      Serial.println(motors1.lenght);
       //Serial.println(digitalRead(Button));
       }
 
@@ -250,7 +124,7 @@ else{directtionM=false;}
 
         previousMillis4 = currentMillis4;
 
-        moveSpyder(intervalScan4, directtionM);
+        motors1.moveSpyder(intervalScan4, motors1.directionM);
   
       }
 
@@ -269,17 +143,17 @@ else{directtionM=false;}
       // Y ahora cambiamos de estado el LED, si está encendido a
       // apagado o viceversa.
       if (ledState == LOW){
-         datoTC[0] = datoTON[0];
-         datoTC[1] = datoTON[1];
-          if (Compare_Time(datoTC)==true){
+         WifiTime.datoTC[0] = WifiTime.datoTON[0];
+         WifiTime.datoTC[1] = WifiTime.datoTON[1];
+          if (WifiTime.Compare_Time(WifiTime.datoTC)==true){
             ledState=true;
           };
       }
     
       else if ((ledState == HIGH)){
-         datoTC[0] = datoTOFF[0];
-         datoTC[1] = datoTOFF[1];
-          if (Compare_Time(datoTC)==true){
+         WifiTime.datoTC[0] = WifiTime.datoTOFF[0];
+         WifiTime.datoTC[1] = WifiTime.datoTOFF[1];
+          if (WifiTime.Compare_Time(WifiTime.datoTC)==true){
             ledState=false;
           };
 
@@ -319,6 +193,7 @@ else{directtionM=false;}
     // El sistema se detiene completamente
     // Serial.println("   ////////////////   STOP ////////////////    ");
     // frenar(1);
+    datoT[0] = 0;
     break;
   case 1:
     //Serial.println("Sistema bloques DATOS:   ");
@@ -327,6 +202,7 @@ else{directtionM=false;}
     // act.movimientos((int)dato[1], (int)dato[2]);
     // frenar(10);
     motors1.setSpeed(0);
+    datoT[0] = 0;
     break;
 
   case 2:
@@ -335,7 +211,14 @@ else{directtionM=false;}
     //  Aquí se pone la funcione de movimientos en la cual dependiendo de cual sea selecciona que realiza el carrito
     // act.movimientos((int)dato[1], (int)dato[2]);
     // frenar(10);
-    motors1.setSpeed(50);
+    Serial.println(datoT[1]);
+    motors1.setSpeed(datoT[1]);
+
+    if(datoT[1]>0){motors1.directionM=true;}
+    if(datoT[1]<0){motors1.directionM=false;}
+
+
+    datoT[0] = 0;
     break;
 
     case 3:
@@ -350,28 +233,31 @@ else{directtionM=false;}
     case 4:
     //Serial.println("Sistema bloques DATOS:   ");
     //bool Status_St=digitalRead(Switch);
-    printLocalTime();
+    WifiTime.printLocalTime();
     Serial.print("Set ON time to:");
-     Serial.print(datoTON[0]);
+     Serial.print(WifiTime.datoTON[0]);
      Serial.print(":");
-     Serial.println(datoTON[1]);
+     Serial.println(WifiTime.datoTON[1]);
 
      Serial.print("Set OFF time to:");
-     Serial.print(datoTOFF[0]);
+     Serial.print(WifiTime.datoTOFF[0]);
      Serial.print(":");
-     Serial.println(datoTOFF[1]);
+     Serial.println(WifiTime.datoTOFF[1]);
+
+    Serial.println(motors1.velocitysmoothed_R[1]);
+
     datoT[0] = 0;
 
     break;
 
     case 5:
-    setTimeON(datoT);
+    WifiTime.setTimeON(datoT);
     datoT[0] = 0;
 
     break;
 
     case 6:
-    setTimeOFF(datoT);
+    WifiTime.setTimeOFF(datoT);
     datoT[0] = 0;
     break;
 
@@ -408,15 +294,25 @@ else{directtionM=false;}
      datoT[0] = 0;
     break;
     
+    case 9:
+    max_lenght=datoT[1];
+    Serial.print("Longitud Maxima: ");
+    Serial.println(max_lenght);
+
+     datoT[0] = 0;
+    break;
+
+    case 10:
+    Serial.print("Longitud motors1.directionM: ");
+    Serial.println(motors1.directionM);
+     datoT[0] = 0;
+    break;
 
     default:
     // colocar movimientos pero en cada instante
     Serial.println("Sistema tele operado");
     // act.tele((int)dato[1]);
     datoT[0] = 0;
-
-    //Program Home
-
 
   }
 

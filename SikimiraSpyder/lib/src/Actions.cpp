@@ -4,7 +4,7 @@
 
 KarakuriMotors motors;
 
-#define Switch 35
+//const int Switch=35;
 #define Encoder 32
 
 

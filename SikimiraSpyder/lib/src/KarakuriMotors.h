@@ -16,12 +16,13 @@
 
 #include <stdint.h>
 
+
 class KarakuriMotors
 {
 public:
     static void flipLeftMotor(bool flip);
     static void flipRightMotor(bool flip);
-    static void setSpeed(int16_t speed);
+    void setSpeed(int16_t speed);
     /**
      * @brief Set the Speeds object
      * 
@@ -30,13 +31,28 @@ public:
      */
     static void setSpeeds(int16_t leftSpeed, int16_t rightSpeed);
     void attenuatedSpeeds(float leftSpeed,int16_t rightSpeed);
+
+    float velocitysmoothed_R[2];
+
+
+    void moveSpyder(int intervalTime_input, bool directtionBool_input);
+    void speedSpyder(int intervalTime_input);
+    static void interrupcion();
+    int sensor= 19;
+    long lenght;
+    bool directionM=false;
+    int n_holes=20;
+    float pi=3.1416;
+    float radius=2.54;
+    float revs = 0;
+    
     
     //float lenght;
 
 private:
-    static inline void init()
+     inline void init()
     {
-        static bool initialized = false;
+         bool initialized = false;
 
         if(!initialized)
         {
@@ -44,7 +60,7 @@ private:
             init2();
         }
     }
-    static void init2();
+    void init2();
 
     float _rightSpeed;
     float _leftSpeed;
