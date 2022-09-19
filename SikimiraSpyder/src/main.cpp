@@ -34,7 +34,7 @@ String stream;
 byte len=0;
 String temp;
 String temp2;
-unsigned int interval=30000;
+unsigned int interval=60000;
 
 /////// Fin de datos para conexión WiFi por BT
 
@@ -104,7 +104,7 @@ boolean check_wifiUpdate(){
   unsigned long currentMillis = millis();
   if (currentMillis - previousMillisBT >= interval) {
     previousMillisBT = currentMillis;
-    Serial.println("30 Seconds Over");
+    Serial.println("60 Seconds Over");
     return true;
   }
   else if (ESP_BT.available()){ //Check if we receive anything from Bluetooth
@@ -237,7 +237,7 @@ EEPROM.begin(50);
 // Serial.begin(9600); //Start Serial monitor in 9600
 Serial.println("Bluetooth Device is Ready to Pair");
 Serial.println("Waiting For Wifi Updates 30 seconds");
-ESP_BT.begin("Sikimira Spyder"); //Name of your Bluetooth Signal
+ESP_BT.begin("Sikimira"); //Name of your Bluetooth Signal
 
 while(!check_wifiUpdate()==true){
   }
