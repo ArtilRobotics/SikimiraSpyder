@@ -24,24 +24,23 @@ int datoT[dataLengthT];
 int ledState = LOW; 
 int ledPin = 2 ;
 
+/////////////////////////////////
 
 long previousMillis = 0;
 long intervalScan = 1000; 
-//%%%%
-
 
 long previousMillis2 = 0;
-  long intervalScan2 = 500; 
+long intervalScan2 = 500; 
 
 long previousMillis3 = 0;
-  long intervalScan3 = 1000; 
+long intervalScan3 = 1000; 
 
-
-  long previousMillis4 = 0;
-  long intervalScan4 = 200; 
+long previousMillis4 = 0;
+long intervalScan4 = 200; 
 
 long max_lenght;
 
+/////////////////////////////////
 void  startWifi(){
   WiFi.begin(ssid, wifipw);
   Serial.println("Connecting Wifi");
@@ -53,7 +52,6 @@ void  startWifi(){
   Serial.println(WiFi.RSSI());
 }
 
-
 //////////////////////////////////////////////////////
 void setup()
 {
@@ -64,7 +62,6 @@ void setup()
   Acciones.init();
   motors1.setSpeed(0);
   WifiTime.init();
-//////
   
   pinMode(ledPin, OUTPUT);
   ledState == LOW;
@@ -132,16 +129,11 @@ void loop()
 
     unsigned long currentMillis = millis();    // Se toma el tiempo actual
 
-      // se comprueba si el tiempo actual menos el tiempo en que el LED cambió
-      // de estado por última vez es mayor que el intervalo.
+
       if (currentMillis - previousMillis > intervalScan){
 
-      // Si se cumple la condición se guarda el nuevo tiempo
-      // en el que el LED cambia de estado
       previousMillis = currentMillis;
 
-      // Y ahora cambiamos de estado el LED, si está encendido a
-      // apagado o viceversa.
       if (ledState == LOW){
          WifiTime.datoTC[0] = WifiTime.datoTON[0];
          WifiTime.datoTC[1] = WifiTime.datoTON[1];
@@ -158,17 +150,13 @@ void loop()
           };
 
       }
-         
 
-      // Hacemos que el contenido de la variable llegue al LED
       digitalWrite(ledPin, ledState);
       }
 
 
   ///////////////////////////////////////////////////////////////////////
 
-
-  // put your main code here, to run repeatedly:
   //
   strT = "";
   if (Serial.available())
@@ -187,6 +175,8 @@ void loop()
     }
     Serial.println(" ");
   }
+
+  
   switch ((int)datoT[0])
   {
   case 0:
