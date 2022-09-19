@@ -7,14 +7,33 @@
 
 #include <WiFi.h>
 
-const char * ssid="Casa_PP";
-const char * wifipw="Casa151098#";
-
 
 Actions Acciones;
 KarakuriMotors motors1;
 KarakuriBluetooth BTS;
 TimeClock WifiTime;
+
+/////// Inicio de datos para conexión WiFi por BT
+
+//const char * ssid="Ortiz";
+//const char * wifipw="22a";
+
+#include "BluetoothSerial.h"
+#include <EEPROM.h>
+BluetoothSerial ESP_BT; //Object for Bluetooth
+String buffer_in;
+unsigned long previousMillisBT = 0; 
+byte val;       
+int addr = 0;
+byte indS=0;
+byte indP=0;
+String stream;
+byte len=0;
+String temp;
+String temp2;
+unsigned int interval=60000;
+
+/////// Fin de datos para conexión WiFi por BT
 
 String strT = "";
 const char separatorT = ',';
@@ -27,7 +46,7 @@ int ledPin = 2 ;
 
 long previousMillis = 0;
 long intervalScan = 1000; 
-//%%%%
+//////////////////////////////////////////////////
 
 
 long previousMillis2 = 0;
@@ -42,6 +61,7 @@ long previousMillis3 = 0;
 
 long max_lenght;
 
+/*
 void  startWifi(){
   WiFi.begin(ssid, wifipw);
   Serial.println("Connecting Wifi");
@@ -52,19 +72,74 @@ void  startWifi(){
   Serial.print("Wifi RSSI=");
   Serial.println(WiFi.RSSI());
 }
+*/
 
+//// Inicio de conexión WiFi por BT
+
+boolean check_wifiUpdate(){
+  unsigned long currentMillis = millis();
+  if (currentMillis - previousMillisBT >= interval) {
+    previousMillisBT = currentMillis;
+    Serial.println("60 Seconds Over");
+    return true;
+  }
+  else if (ESP_BT.available()){ //Check if we receive anything from Bluetooth
+    interval=50000;
+    buffer_in = ESP_BT.readStringUntil('\n'); //Read what we recevive 
+    //Serial.println("Received:"); Serial.println(buffer_in);
+    delay(20);
+    if(buffer_in.charAt(0)=='S'){
+      for(int i=0;i<buffer_in.length();i++){
+        val=(byte)(buffer_in.charAt(i));
+        //Serial.println("val "+val);
+        EEPROM.write(addr, val);
+        //Serial.println(val);
+        addr++;
+      }
+      //Serial.print("New ");
+      //Serial.print(buffer_in);
+      EEPROM.write(addr, 10);
+      addr++;
+      EEPROM.commit();     
+      ESP_BT.println("SSID Stored");
+    }
+    else if(buffer_in.charAt(0)=='P'){
+      for(int i=0;i<buffer_in.length();i++){
+        val=(byte)(buffer_in.charAt(i));
+        //Serial.println("val "+val);
+        EEPROM.write(addr, val);
+        //Serial.println(val);
+        addr++;
+      }
+      //Serial.print("New ");
+      //Serial.print(buffer_in);
+      EEPROM.write(addr, 10);
+      EEPROM.commit();  
+      ESP_BT.println("Password Stored"); 
+      return true;
+    }  
+    return false;
+  }
+  else
+  { return false;
+  }
+}
+
+//// Fin de conexión WiFi por BT
 
 //////////////////////////////////////////////////////
 void setup()
 {
   // put your setup code here, to run once:
-  Serial.begin(115200);
-  startWifi();
+  Serial.begin(9600);
   BTS.Start();
   Acciones.init();
   motors1.setSpeed(0);
   WifiTime.init();
 //////
+ 
+
+  
   
   pinMode(ledPin, OUTPUT);
   ledState == LOW;
@@ -74,6 +149,66 @@ void setup()
 
      WifiTime.datoTOFF[0] = WifiTime.datoTON[0];
      WifiTime.datoTOFF[1] =  WifiTime.datoTON[1]+5;
+     
+/////// Inicio de conexión WiFi por BT
+
+//startWifi();
+
+EEPROM.begin(50);
+// Serial.begin(9600); //Start Serial monitor in 9600
+Serial.println("Bluetooth Device is Ready to Pair");
+Serial.println("Waiting For Wifi Updates 30 seconds");
+ESP_BT.begin("Sikimira"); //Name of your Bluetooth Signal
+
+while(!check_wifiUpdate()==true){
+  }
+  Serial.println("The Stored Wifi credetial are : ");
+  for(int i=0;i<50;i++){
+    val=EEPROM.read(i);
+    stream+=(char)val;
+    if((val==10) && (indS==0)){
+      indS=i;
+      //Serial.println("indS"+(String)i);
+    }
+    else if(val==10 && indP==0){
+      indP=i;
+      break;
+      //Serial.println("indP"+(String)i);
+    }
+  }
+  // Serial.println(stream);
+  // Serial.println("Stream Ended");
+  temp=stream.substring(0,indS);
+  temp=temp.substring(5,indS);
+  //ssid2=ssid;
+  temp2=stream.substring(indS+1,indP);
+  temp2=temp2.substring(5,indP-indS);
+  int i=temp.length();
+  int j=temp2.length();
+  char ssid[i];
+  char pass[j]; 
+  temp.toCharArray(ssid,i);
+  temp2.toCharArray(pass,j);
+  Serial.println("Stored SSID");
+  Serial.println(ssid);
+  Serial.println("Stored PASS");
+  Serial.println(pass);
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(ssid, pass);
+  if (WiFi.waitForConnectResult() != WL_CONNECTED) {
+    Serial.println("WiFi Failed");
+    while(1) {
+      delay(1000);
+    }
+  }
+  else{
+    Serial.print("Wifi Connected to ");
+    Serial.println(ssid);
+    digitalWrite(ledPin, HIGH);
+  }
+
+///////  Fin de conexión WiFi por BT
+
 }
 
 ////////////////////////////////////////////////////////////////
