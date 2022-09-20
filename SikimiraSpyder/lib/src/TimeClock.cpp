@@ -2,7 +2,9 @@
 #include <TimeClock.h>
 #include <WiFi.h>
 #include "time.h"
+#include <PermanentValues.h>
 
+PermanentValues SetValues;
 
 void TimeClock::init(){
    initTime("COT5");   // Set for Melbourne/AU
@@ -71,22 +73,27 @@ boolean array_cmp(int *a, int *b, int len_a, int len_b){
 
   void TimeClock::setTimeON( int datoC[2]){
 
-     datoTON[0] = datoC[1];
-     datoTON[1] = datoC[2];
+     datoTON[0] = datoC[0];
+     datoTON[1] = datoC[1];
 
      Serial.print("Set ON time to:");
      Serial.print(datoTON[0]);
      Serial.print(":");
      Serial.println(datoTON[1]);
+
+      SetValues.WR_time(true, char(datoTON[0]), char(datoTON[1]), true);
+     
   }
 
   void TimeClock::setTimeOFF( int datoC[2]){
 
-     datoTOFF[0] = datoC[1];
-     datoTOFF[1] = datoC[2];
+     datoTOFF[0] = datoC[0];
+     datoTOFF[1] = datoC[1];
 
      Serial.print("Set OFF time to:");
      Serial.print(datoTOFF[0]);
      Serial.print(":");
      Serial.println(datoTOFF[1]);
+
+     SetValues.WR_time(false, char(datoTOFF[0]), char(datoTOFF[1]), true);
   }

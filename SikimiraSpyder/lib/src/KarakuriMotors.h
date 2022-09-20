@@ -31,20 +31,19 @@ public:
      */
     static void setSpeeds(int16_t leftSpeed, int16_t rightSpeed);
     void attenuatedSpeeds(float leftSpeed,int16_t rightSpeed);
-
-    float velocitysmoothed_R[2];
-
-
-    void moveSpyder(int intervalTime_input, bool directtionBool_input);
+    void movingSpyder(bool directtionBool_input);
     void speedSpyder(int intervalTime_input);
     static void interrupcion();
-    int sensor= 19;
-    long lenght;
+
+    int sensor= 19; //Pin del Encoder
+    float lenght;
     bool directionM=false;
-    int n_holes=20;
+    int n_holes=4;
     float pi=3.1416;
-    float radius=2.54;
+    float radius=1/(2*pi);
+    //float radius=2.54;
     float revs = 0;
+    void init3();
     
     
     //float lenght;
