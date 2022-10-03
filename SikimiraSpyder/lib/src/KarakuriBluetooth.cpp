@@ -15,13 +15,20 @@ const char separator = ',';
 const int dataLength = 3;
 int dato[dataLength];
 
+bool ActivityStatus=true;
 
 
 // Definición de la bandera de estados del sistema
 int estado = 0;
 
-// long previousMillis = 0;
-// long intervalScan = 1000; 
+
+long previousTime = 0;
+long intervalScanTime = 2000; 
+long previousMins = 0;
+long intervalScanTimeMin = 1; 
+long previousHours = 0;
+long intervalScanTimeHour = 1; 
+
 
 // long previousMillis2 = 0;
 // long intervalScan2 = 100; 
@@ -48,29 +55,21 @@ void serialFlush()
 void KarakuriBluetooth::Update()
 {
 
-    //  unsigned long currentMillis = millis();    // Se toma el tiempo actual
+     unsigned long currentMins = ( millis()/1000 ) / 60;    //Medir en Minutos
+     unsigned long currentHours = ( ( millis()/1000 ) / 60 ) / 60;    //Medir en Horas
+        
 
- 
-    //   if (currentMillis - previousMillis > intervalScan){
+        if (currentMins - previousMins > intervalScanTimeMin){
+            //act.GetTimeNow();
+            act.CheckTimer();
+            previousMins = currentMins;
+        }
 
-    //     previousMillis = currentMillis;
- 
-    //     //act.GetTimeNow();
-    //     act.CalcLenght();
-          
-    //   }
+        if (currentHours - previousHours > intervalScanTimeHour){
+            act.CheckDayStatus();
+            previousHours = currentHours;
+        }
 
-    //   unsigned long currentMillis2 = millis();    // Se toma el tiempo actual
-
- 
-    //   if (currentMillis2 - previousMillis2 > intervalScan2){
-
-    //     previousMillis2 = currentMillis2;
- 
-    //     //act.GetTimeNow();
-    //     act.MotorStatus();
-    
-    //   }
 
     str = "";
     if (BT.available())
@@ -92,10 +91,19 @@ void KarakuriBluetooth::Update()
 
     switch ((int)dato[0])
     {
-    case 0:
 
+    case 0:
+        
         dato[0] = 0;
         break;
+        
+    case 10:
+        if(ActivityStatus){
+            act.movimientos(20,2);
+        }
+        dato[0] = 0;
+        break;
+
     case 1: //Falta de configurar para movimiento de Araña
         //act.MoveSpyder(dato[1]);
         dato[0] = 0;
@@ -157,8 +165,7 @@ void KarakuriBluetooth::Update()
         // act.setDays(dato); //FUNCION ORIGINAL
 
 
-         act.atras(0); //Prueba de conteo
-        
+         //act.atras(0); //Prueba de conteo
         dato[0] = 0;
 
     break;
@@ -167,16 +174,15 @@ void KarakuriBluetooth::Update()
     case 9: //Boton Home
         
         //Funcion de prueba usada para verificar Seteto y obtencion de Informacion Permanente
-        act.getTimesProgram();
-        act.getLevels();
-        act.PrintTimes();
-        act.PrintLevels();
-        dato[0] = 0;
-        act.adelante(0);
-
+        // act.getTimesProgram();
+        // act.getLevels();
+        // act.PrintTimes();
+        // act.PrintLevels();
 
         //Funcion Original
-        /////act.home();
+        act.home();
+
+        dato[0] = 0;
     break;
     
 
@@ -189,4 +195,22 @@ void KarakuriBluetooth::Update()
         ti = 0;
         break;
     }
+
+
+    //if(act.SpiderDayState){
+        if(act.DeviceTimeStatus){
+
+            unsigned long currentTime =  millis();    //Medir en millis
+        
+
+        if (currentTime - previousTime > intervalScanTime){
+            //act.GetTimeNow();
+           Serial.println("Activated Loop");
+            previousTime = currentTime;
+        }
+            
+        }
+   // }
+    
+
 }

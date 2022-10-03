@@ -128,31 +128,31 @@ void PermanentValues::WR_day(int Day, bool SetValue, bool Write){
     if(Write==false){
 
         
-        if(Day == 0){
+        if(Day == 1){
            dayStatus = preferences.getBool("Monday", SetValue);
         }
         
-        else if(Day == 1){
+        else if(Day == 2){
            dayStatus = preferences.getBool("Tuesday", SetValue);
         }
 
-        else if(Day == 2){
+        else if(Day == 3){
             dayStatus = preferences.getBool("Wednesday", SetValue);
         }
 
-        else if(Day == 3){
+        else if(Day == 4){
             dayStatus = preferences.getBool("Thursday", SetValue);
         }
 
-        else if(Day == 4){
+        else if(Day == 5){
             dayStatus = preferences.getBool("Friday", SetValue);
         }
 
-        else if(Day == 5){
+        else if(Day == 6){
             dayStatus = preferences.getBool("Saturday", SetValue);
         }
 
-        else if(Day == 6){
+        else if(Day == 0){
             dayStatus = preferences.getBool("Sunday", SetValue);
 
     }

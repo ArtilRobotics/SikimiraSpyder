@@ -16,6 +16,7 @@ public:
     int ValueMinON;
     int ValueHourOFF;
     int ValueMinOFF;
+    bool dayStatus;
     
 private:
      

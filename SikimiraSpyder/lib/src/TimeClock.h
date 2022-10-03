@@ -28,6 +28,7 @@
     bool Compare_Time( int dato[2]);
     void setTimeON( int dato[2]);
     void setTimeOFF( int dato[2]);
+    int TodayDay();
 
     int datoTC[2];
     int datoCC[2];

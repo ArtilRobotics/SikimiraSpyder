@@ -21,7 +21,6 @@ static bool flipRight = false;
 
 // use 13 bit precision for LED_C timer
 #define TIMER_13_BIT 8
-
 // use 50 KHz as a  base frequency
 #define BASE_FREQ 5000
 
@@ -66,7 +65,6 @@ void KarakuriMotors::init2()
     //ledcSetup(CHANNEL_1, BASE_FREQ, TIMER_13_BIT);
     ledcAttachPin(PWM_A, CHANNEL_0);
     //ledcAttachPin(PWM_B, CHANNEL_1);
-
 }
 
 // enable/disable flipping of left motor 

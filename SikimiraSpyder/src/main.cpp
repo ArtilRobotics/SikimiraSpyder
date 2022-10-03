@@ -116,16 +116,20 @@ void loop()
     break;
     
     case 9:
-    //max_lenght=datoT[1];
-    //Serial.print("Longitud Maxima: ");
-   //Serial.println(max_lenght);
-
-     datoT[0] = 0;
+    
+    Acciones.movimientos(20,2);
+     //datoT[0] = 0;
     break;
 
     case 10:
    // Serial.print("Longitud motors1.directionM: ");
     //Serial.println(motors1.directionM);
+
+        Acciones.getTimesProgram();
+        Acciones.getLevels();
+        Acciones.PrintTimes();
+        Acciones.PrintLevels();
+
      datoT[0] = 0;
     break;
 
