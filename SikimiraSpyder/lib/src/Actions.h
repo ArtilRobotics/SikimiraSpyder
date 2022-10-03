@@ -11,6 +11,7 @@ class Actions
     const int moveSpeed = 150;
     const int minSpeed = 48;
     const int factor = 23;
+    //const int Switch;
 
     enum Commands
     {
@@ -29,6 +30,8 @@ public:
     void atras(int argument);
     void tele(int estado);
     void home();
+
+    const int Switch=35;
 
 private:
 };

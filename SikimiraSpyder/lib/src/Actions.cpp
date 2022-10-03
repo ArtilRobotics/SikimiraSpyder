@@ -4,8 +4,8 @@
 
 KarakuriMotors motors;
 
-#define Switch 35
-#define Encoder 32
+//const int Switch=35;
+#define Encoder 19
 
 
 void Actions::init(){
