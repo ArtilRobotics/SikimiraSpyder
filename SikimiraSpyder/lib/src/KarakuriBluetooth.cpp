@@ -20,7 +20,7 @@ int estado = 0;
 
 void KarakuriBluetooth::Start()
 {
-    BT.begin("Sikimira Spyder");
+    BT.begin("Sikimira");
     BT.begin(9600);
     Serial.println("BT iniciado");
 }
