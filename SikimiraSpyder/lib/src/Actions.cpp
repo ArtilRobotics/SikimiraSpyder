@@ -29,6 +29,8 @@ void Actions::init(){
     motors.init3();
     getTimesProgram();
     getLevels();
+    CheckDayStatus();
+    CheckTimer();
     home();
     
     //motors

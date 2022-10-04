@@ -64,7 +64,7 @@ boolean array_cmp(int *a, int *b, int len_a, int len_b){
      datoCC[0] = timeinfo.tm_hour;
      datoCC[1] = timeinfo.tm_min;
     
-     if(datoCC[0]>=datoC[0] ||datoCC[0]==datoC[0] && datoCC[1]>=datoC[1]){
+     if(datoCC[0]>datoC[0] || datoCC[0]==datoC[0] && datoCC[1]>=datoC[1]){
       Status = true;
      }
      //Serial.print(datoCC[0]);
