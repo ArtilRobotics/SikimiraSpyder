@@ -56,23 +56,80 @@ boolean array_cmp(int *a, int *b, int len_a, int len_b){
       return true;
 }
 
-  bool TimeClock::Compare_Time( int datoC[2]){
+  // bool TimeClock::Compare_Time(){
+  //   struct tm timeinfo;
+  //   bool Status=false;
+  //   if(!getLocalTime(&timeinfo)){}
+  
+  //    datoCC[0] = timeinfo.tm_hour;
+  //    datoCC[1] = timeinfo.tm_min;
+    
+  //    if(datoCC[0]>datoC[0] || datoCC[0]==datoC[0] && datoCC[1]>=datoC[1]){
+  //       if(datoCC[0]>datoC[0]){
+  //         Serial.print(datoCC[0]);
+  //         Serial.print(" > ");
+  //         Serial.println(datoC[0]);
+  //       }
+
+  //       if(datoCC[0]==datoC[0] && datoCC[1]>=datoC[1]){
+  //         Serial.print(datoCC[0]);
+  //         Serial.print(" == ");
+  //         Serial.print(datoC[0]);
+  //         Serial.print(" && ");
+  //         Serial.print(datoCC[1]);
+  //         Serial.print(" >= ");
+  //         Serial.println(datoC[1]);
+  //       }
+      
+      
+  //     Status = true;
+  //    }
+
+  //    //Serial.print(datoCC[0]);
+  //    //Serial.print(":");
+  //    //Serial.println(datoCC[1]);
+  //    //Serial.println(Status);
+
+  //   return Status;
+  // }
+
+  bool TimeClock::Compare_Time( ){
     struct tm timeinfo;
-    bool Status;
+    bool Status=false;
+
     if(!getLocalTime(&timeinfo)){}
   
      datoCC[0] = timeinfo.tm_hour;
      datoCC[1] = timeinfo.tm_min;
     
-     if(datoCC[0]>datoC[0] || datoCC[0]==datoC[0] && datoCC[1]>=datoC[1]){
-      Status = true;
+     if(datoCC[0]> datoTON[0] && datoCC[0]<datoTOFF[0]) Status = true;
+    
+     if(datoCC[0]>= datoTON[0] && datoCC[0]<= datoTOFF[0]){
+      if(datoCC[0]== datoTON[0] && datoCC[0]== datoTOFF[0]){
+        if(datoCC[1]>= datoTON[1] && datoCC[1]< datoTOFF[1]){
+          Status = true;
+        }
+      }
+      if(datoCC[0]> datoTON[0] && datoCC[0]== datoTOFF[0]){
+        if(datoCC[1]< datoTOFF[1]){
+          Status = true;
+        }
+      }
+      if(datoCC[0]== datoTON[0] && datoCC[0]< datoTOFF[0]){
+        if(datoCC[1]>= datoTON[1]){
+          Status = true;
+        }
+      }
+
      }
+
+     return Status;
      //Serial.print(datoCC[0]);
      //Serial.print(":");
      //Serial.println(datoCC[1]);
      //Serial.println(Status);
 
-    return Status;
+    
   }
 
   void TimeClock::setTimeON( int datoC[2]){
@@ -80,7 +137,7 @@ boolean array_cmp(int *a, int *b, int len_a, int len_b){
      datoTON[0] = datoC[0];
      datoTON[1] = datoC[1];
 
-     Serial.print("Set ON time to:");
+     Serial.print("Set ON time to: ");
      Serial.print(datoTON[0]);
      Serial.print(":");
      Serial.println(datoTON[1]);
@@ -94,7 +151,7 @@ boolean array_cmp(int *a, int *b, int len_a, int len_b){
      datoTOFF[0] = datoC[0];
      datoTOFF[1] = datoC[1];
 
-     Serial.print("Set OFF time to:");
+     Serial.print("Set OFF time to: ");
      Serial.print(datoTOFF[0]);
      Serial.print(":");
      Serial.println(datoTOFF[1]);

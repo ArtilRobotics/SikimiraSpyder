@@ -24,8 +24,10 @@ int estado = 0;
 
 long previousTime = 0;
 long intervalScanTime = 2000; 
+long previousTime2 = 0;
+long intervalScanTime2 = 500; 
 long previousMins = 0;
-long intervalScanTimeMin = 1; 
+long intervalScanTimeMin = 30000; 
 long previousHours = 0;
 long intervalScanTimeHour = 1; 
 
@@ -55,7 +57,8 @@ void serialFlush()
 void KarakuriBluetooth::Update()
 {
 
-     unsigned long currentMins = ( millis()/1000 ) / 60;    //Medir en Minutos
+     //unsigned long currentMins = ( millis()/1000 ) / 60;    //Medir en Minutos
+     unsigned long currentMins = millis();    //Medir en Minutos
      unsigned long currentHours = ( ( millis()/1000 ) / 60 ) / 60;    //Medir en Horas
         
 
@@ -66,7 +69,7 @@ void KarakuriBluetooth::Update()
         }
 
         if (currentHours - previousHours > intervalScanTimeHour){
-            act.CheckDayStatus();
+            //act.CheckDayStatus();
             previousHours = currentHours;
         }
 
@@ -104,8 +107,8 @@ void KarakuriBluetooth::Update()
         dato[0] = 0;
         break;
 
-    case 1: //Falta de configurar para movimiento de Araña
-        //act.MoveSpyder(dato[1]);
+    case 1: 
+        act.MoveSpyder(dato[1]);
         dato[0] = 0;
         break;
 
@@ -162,10 +165,11 @@ void KarakuriBluetooth::Update()
 
         // El tercer valor corresponde a el booleano true = 1 y false =  0
 
-        // act.setDays(dato); //FUNCION ORIGINAL
+        act.setDays(dato); //FUNCION ORIGINAL
 
 
          //act.atras(0); //Prueba de conteo
+        //act.movimientos(20,2);
         dato[0] = 0;
 
     break;
@@ -205,12 +209,21 @@ void KarakuriBluetooth::Update()
 
         if (currentTime - previousTime > intervalScanTime){
             //act.GetTimeNow();
-           Serial.println("Activated Loop");
+            Serial.println("Activated Loop");
             previousTime = currentTime;
         }
             
         }
    // }
-    
 
+
+        unsigned long currentTime2 =  millis();    //Medir en millis
+        
+
+        if (currentTime2 - previousTime2 > intervalScanTime2){
+            act.CheckLenght();
+             previousTime2 = currentTime2;
+        }
+    
+    
 }

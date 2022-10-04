@@ -15,7 +15,7 @@ int maxSpeed=50;
 bool DeviceTimeStatus=false; //Varibale para activar o no el movimiento automatico
 
 long previousMillis = 0;
-long intervalScan = 1000; 
+long intervalScan = 100; 
 
 long previousMillis2 = 0;
 long intervalScan2 = 100; 
@@ -204,7 +204,7 @@ void Actions::home()
 
       else{
          Serial.println("Button No Push - Activate Motor");
-         motors.setSpeed(100); // SET TEST SPEED
+         motors.setSpeed(-100); // SET TEST SPEED
 
          while(digitalRead(Switch)==HIGH){}
          
@@ -213,12 +213,19 @@ void Actions::home()
         
       }
 
+      motors.setSpeed(10);
+      delay(1000);
+      motors.setSpeed(0);
+      motors.lenght=0;
+
 }
 
 void Actions::CheckLenght(){
             if((motors.lenght<=0 && motors.directionM==false) || digitalRead(Switch)== LOW){
                 motors.setSpeed(0);
                 motors.lenght=0;
+
+                if(digitalRead(Switch)== LOW){home();}
             }
 
             else if(motors.lenght>max_lenght && motors.directionM){
@@ -274,9 +281,12 @@ void Actions::CheckLenght(){
         
 
 void Actions::MoveSpyder(int dato)
-{
+{   Serial.print("Dato Recibido: ");
+    Serial.println(dato);
+    if(dato>motors.lenght){adelante(dato,5);}
+    if(dato<motors.lenght){atras(dato,5);}
     
-        motors.setSpeed(dato);
+    //motors.setSpeed(dato);
        
 }
 
@@ -305,21 +315,61 @@ void Actions::setOFF(int datoR[3]){
 }
 
 void Actions::getTimesProgram(){
-   SetValues1.WR_time(true, 0,0,false);
-   SetValues1.WR_time(false, 0,0,false);
+//    SetValues1.WR_time(true, 0,0,false);
+//    SetValues1.WR_time(false, 0,0,false);
+
+   SetValues1.getTime();
+
+   WifiTime.datoTON[0]=SetValues1.ValueHourON;
+   WifiTime.datoTON[1]=SetValues1.ValueMinON;
+   WifiTime.datoTOFF[0]=SetValues1.ValueHourOFF;
+   WifiTime.datoTOFF[1]=SetValues1.ValueMinOFF;
+
+  
 }
 
 void Actions::PrintTimes(){
+    
     Serial.print("Hora de activación: ");
-    Serial.print(SetValues1.ValueHourON);
+    Serial.print( WifiTime.datoTON[0]);
     Serial.print(":");
-    Serial.println(SetValues1.ValueMinON);
+    Serial.println(WifiTime.datoTON[1]);
 
     
     Serial.print("Hora de desactivación: ");
-    Serial.print(SetValues1.ValueHourOFF);
+    Serial.print(WifiTime.datoTOFF[0]);
     Serial.print(":");
-    Serial.println(SetValues1.ValueMinOFF);
+    Serial.println(WifiTime.datoTOFF[1]);
+
+    Serial.print("Dias de activación: ");
+    Serial.print("L");
+    Serial.print(":");
+    Serial.print(SetValues1.dayConfig[0]);
+    Serial.print("-");
+    Serial.print("M");
+    Serial.print(":");
+    Serial.print(SetValues1.dayConfig[1]);
+    Serial.print("-");
+    Serial.print("W");
+    Serial.print(":");
+    Serial.print(SetValues1.dayConfig[2]);
+    Serial.print("-");
+    Serial.print("J");
+    Serial.print(":");
+    Serial.print(SetValues1.dayConfig[3]);
+    Serial.print("-");
+    Serial.print("V");
+    Serial.print(":");
+    Serial.print(SetValues1.dayConfig[4]);
+    Serial.print("-");
+    Serial.print("S");
+    Serial.print(":");
+    Serial.print(SetValues1.dayConfig[5]);
+    Serial.print("-");
+    Serial.print("D");
+    Serial.print(":");
+    Serial.println(SetValues1.dayConfig[6]);
+    
 }
 
 
@@ -345,6 +395,10 @@ void Actions::PrintLevels(){
 
      Serial.print("Nivel Bajo: ");
     Serial.println(SetValues1.ValueLow);
+
+      Serial.print("Longitud Actual: ");
+    Serial.println(motors.lenght);
+
 }
 
 void Actions::setDays(int datoR[3]){
@@ -371,36 +425,34 @@ void Actions::CheckTimer(){ // Funcion para verificar el horario de activacion
     //Agregar como funcion de verificacion dentro de la libreria TimeClock 
 
     if (DeviceTimeStatus == false){
-         WifiTime.datoTC[0] = SetValues1.ValueHourON;
-         WifiTime.datoTC[1] = SetValues1.ValueMinON;
+         
         ///////////////////////////////////////////
          Serial.println("DeviceTimeStatus = false");
          Serial.print("TimeON:");
-         Serial.print(WifiTime.datoTC[0]);
+         Serial.print(WifiTime.datoTON[0]);
          Serial.print(":");
-         Serial.println(WifiTime.datoTC[1]);
+         Serial.println(WifiTime.datoTON[1]);
         /////////////////////////////////////////////
-          if (WifiTime.Compare_Time(WifiTime.datoTC)==true){
+          if (WifiTime.Compare_Time()==true){
             Serial.println("Actvivated");
             DeviceTimeStatus=true;
-            home();
+            //home();
           };
       }
     
       else if (DeviceTimeStatus == true){
-         WifiTime.datoTC[0] = SetValues1.ValueHourOFF;
-         WifiTime.datoTC[1] = SetValues1.ValueMinOFF;
+         
           ///////////////////////////////////////////
          Serial.println("DeviceTimeStatus = true");
          Serial.print("TimeOFF:");
-         Serial.print(WifiTime.datoTC[0]);
+         Serial.print(WifiTime.datoTOFF[0]);
          Serial.print(":");
-         Serial.println(WifiTime.datoTC[1]);
+         Serial.println(WifiTime.datoTOFF[1]);
         /////////////////////////////////////////////
-          if (WifiTime.Compare_Time(WifiTime.datoTC)==true){
+          if (WifiTime.Compare_Time()==false){
             Serial.println("Desactvivated");
             DeviceTimeStatus=false;
-            home();
+            //home();
           };
       }
 

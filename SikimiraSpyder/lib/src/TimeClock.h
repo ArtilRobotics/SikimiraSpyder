@@ -25,7 +25,7 @@
     void setTimezone(String timezones);
     void initTime(String timezones);
     void printLocalTime();
-    bool Compare_Time( int dato[2]);
+    bool Compare_Time();
     void setTimeON( int dato[2]);
     void setTimeOFF( int dato[2]);
     int TodayDay();

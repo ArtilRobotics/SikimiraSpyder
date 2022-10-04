@@ -17,6 +17,8 @@ public:
     int ValueHourOFF;
     int ValueMinOFF;
     bool dayStatus;
+    bool dayConfig[7];
+    void getTime();
     
 private:
      
