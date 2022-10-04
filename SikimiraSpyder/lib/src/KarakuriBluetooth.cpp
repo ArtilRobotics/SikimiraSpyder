@@ -60,7 +60,7 @@ void KarakuriBluetooth::Update()
         
 
         if (currentMins - previousMins > intervalScanTimeMin){
-            //act.GetTimeNow();
+            act.GetTimeNow();
             act.CheckTimer();
             previousMins = currentMins;
         }
