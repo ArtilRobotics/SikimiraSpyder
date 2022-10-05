@@ -21,20 +21,18 @@ static bool flipRight = false;
 
 // use 13 bit precision for LED_C timer
 #define TIMER_13_BIT 8
-
 // use 50 KHz as a  base frequency
 #define BASE_FREQ 5000
 
 int brightness = 0; // how bright the LED is
 int fadeAmount = 5; // how many points to fade the LED by
 
-float velocitysmoothed_R[2];
+float velocitysmoothed_R;
 float velocityPrev_R;
 float velocitysmoothed_L;
 float velocityPrev_L;
 
 volatile int contador = 0;
-
 
 // Arduino like analogWrite
 // value has to be between 0 and valueMax
@@ -45,6 +43,12 @@ void analogWriteESP(uint8_t channel, uint32_t value, uint32_t valueMax = 255)
 
     // write duty to LED_C
     ledcWrite(channel, duty);
+}
+
+void KarakuriMotors::init3(){
+    pinMode(sensor, INPUT);
+    attachInterrupt(sensor,interrupcion, FALLING);
+    Serial.println("ActivateInterruption");
 }
 
 void KarakuriMotors::init2()
@@ -61,8 +65,6 @@ void KarakuriMotors::init2()
     //ledcSetup(CHANNEL_1, BASE_FREQ, TIMER_13_BIT);
     ledcAttachPin(PWM_A, CHANNEL_0);
     //ledcAttachPin(PWM_B, CHANNEL_1);
-       attachInterrupt(sensor,interrupcion, FALLING);
-
 }
 
 // enable/disable flipping of left motor 
@@ -116,15 +118,15 @@ void KarakuriMotors::attenuatedSpeeds(float leftSpeed,int16_t rightSpeed)
     bool atenuacion =true;
     while (atenuacion){
         
-        velocitysmoothed_R[0] = (rightSpeed*0.05)+(velocityPrev_R*0.95);
-        velocityPrev_R = velocitysmoothed_R[0];
-        setSpeed(velocitysmoothed_R[0]);
+        velocitysmoothed_R = (rightSpeed*0.05)+(velocityPrev_R*0.95);
+        velocityPrev_R = velocitysmoothed_R;
+        setSpeed(velocitysmoothed_R);
 
         velocitysmoothed_L = (leftSpeed*0.05)+(velocityPrev_L*0.95);
         velocityPrev_L = velocitysmoothed_L;
 
         //delay(10);
-        if (velocitysmoothed_R[0]<rightSpeed+0.5 && velocitysmoothed_R[0]>rightSpeed-0.5)
+        if (velocitysmoothed_R<rightSpeed+0.5 && velocitysmoothed_R>rightSpeed-0.5)
         {
             atenuacion=false;
         }
@@ -132,23 +134,19 @@ void KarakuriMotors::attenuatedSpeeds(float leftSpeed,int16_t rightSpeed)
 
 }
 
-void KarakuriMotors::moveSpyder(int intervalTime, bool directtionBool){
+void KarakuriMotors::movingSpyder(bool directtionBool){
 
-        float temp =float (intervalTime)/1000.0f;
-       
-        float dp=revs*temp*2*pi*radius;
+        float moving=(2*pi*radius*float(contador))/float(n_holes);
 
-        if(directtionBool==true){lenght=lenght+dp;}
-        else{lenght=lenght-dp;}
+        if(directtionBool==true){lenght=lenght+moving;}
+        else{lenght=lenght-moving;}
 
         if(lenght<=0){lenght=0;}
+
+        contador=0;
+
   }
 
-void KarakuriMotors::speedSpyder(int intervalTime){
-      revs=float (contador)/float (n_holes)*(1000.0f/ float(intervalTime));
-      contador=0;
-    }
-
 void KarakuriMotors::interrupcion() {
-  contador++;
+    contador++;
   }
