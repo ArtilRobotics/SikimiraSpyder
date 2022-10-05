@@ -5,8 +5,8 @@
 //#define BIN2 26
 //#define PWM_B 33
 
-#define AIN1 25
-#define AIN2 26
+#define AIN1 26
+#define AIN2 25
 #define PWM_A 33
 
 #define STBY 27

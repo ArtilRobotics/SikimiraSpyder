@@ -38,9 +38,9 @@ public:
     int sensor= 19; //Pin del Encoder
     float lenght;
     bool directionM=false;
-    int n_holes=4;
+    int n_holes=15;
     float pi=3.1416;
-    float radius=1/(2*pi);
+    float radius=0.95/4;
     //float radius=2.54;
     float revs = 0;
     void init3();

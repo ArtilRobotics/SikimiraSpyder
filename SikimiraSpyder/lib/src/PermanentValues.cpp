@@ -15,6 +15,7 @@ int ValueMinON;
 int ValueHourOFF;
 int ValueMinOFF;
 bool dayStatus;
+bool dayConfig[7];
 
 
 
@@ -95,32 +96,54 @@ void PermanentValues::WR_day(int Day, bool SetValue, bool Write){
 
     if(Write){
         
-        if(Day == 0){
+        if(Day == 1){
             preferences.putBool("Monday", SetValue);
+            Serial.print("Set Monday Status: ");
+            if(SetValue==true){Serial.println("ON");}
+            if(SetValue==false){Serial.println("OFF");}
+            
         }
         
-        else if(Day == 1){
-            preferences.putBool("Tuesday", SetValue);
-        }
-
         else if(Day == 2){
-            preferences.putBool("Wednesday", SetValue);
+            preferences.putBool("Tuesday", SetValue);
+            Serial.print("Set Tuesday Status: ");
+            if(SetValue==true){Serial.println("ON");}
+            if(SetValue==false){Serial.println("OFF");}
         }
 
         else if(Day == 3){
-            preferences.putBool("Thursday", SetValue);
+            preferences.putBool("Wednesday", SetValue);
+            Serial.print("Set Wednesday Status: ");
+            if(SetValue==true){Serial.println("ON");}
+            if(SetValue==false){Serial.println("OFF");}
         }
 
         else if(Day == 4){
-            preferences.putBool("Friday", SetValue);
+            preferences.putBool("Thursday", SetValue);
+            Serial.print("Set Thursday Status: ");
+            if(SetValue==true){Serial.println("ON");}
+            if(SetValue==false){Serial.println("OFF");}
         }
 
         else if(Day == 5){
-            preferences.putBool("Saturday", SetValue);
+            preferences.putBool("Friday", SetValue);
+            Serial.print("Set Friday Status: ");
+            if(SetValue==true){Serial.println("ON");}
+            if(SetValue==false){Serial.println("OFF");}
         }
 
         else if(Day == 6){
+            preferences.putBool("Saturday", SetValue);
+            Serial.print("Set Saturday Status: ");
+            if(SetValue==true){Serial.println("ON");}
+            if(SetValue==false){Serial.println("OFF");}
+        }
+
+        else if(Day == 0){
             preferences.putBool("Sunday", SetValue);
+            Serial.print("Set Sunday Status: ");
+            if(SetValue==true){Serial.println("ON");}
+            if(SetValue==false){Serial.println("OFF");}
         }
 
     }
@@ -162,11 +185,22 @@ void PermanentValues::WR_day(int Day, bool SetValue, bool Write){
 }
 }
 
-void getTime(){
+void PermanentValues::getTime(){
+    preferences.begin("PermValues", false);
+
     ValueHourON = preferences.getUChar("TimeONHour", ValueHourDef);
     ValueMinON = preferences.getUChar("TimeONMin", ValueMinDef);
     ValueHourOFF = preferences.getUChar("TimeOFFHour", ValueHourDef);
     ValueMinOFF = preferences.getUChar("TimeOFFMin", ValueMinDef);
+    dayConfig[0]= preferences.getBool("Monday", 0);
+    dayConfig[1]= preferences.getBool("Tuesday", 0);
+    dayConfig[2]= preferences.getBool("Wednesday", 0);
+    dayConfig[3]= preferences.getBool("Thursday", 0);
+    dayConfig[4]= preferences.getBool("Friday", 0);
+    dayConfig[5]= preferences.getBool("Saturday", 0);
+    dayConfig[6]= preferences.getBool("Sunday", 0);
+    
+    preferences.end();
 }
 
 void PermanentValues::init() {
