@@ -15,25 +15,22 @@ const char separator = ',';
 const int dataLength = 3;
 int dato[dataLength];
 
-bool ActivityStatus=true;
-
+bool ActivityStatus = true;
 
 // Definición de la bandera de estados del sistema
 int estado = 0;
 
-
 long previousTime = 0;
-long intervalScanTime = 2000; 
+long intervalScanTime = 2000;
 long previousTime2 = 0;
-long intervalScanTime2 = 500; 
+long intervalScanTime2 = 500;
 long previousMins = 0;
-long intervalScanTimeMin = 30000; 
+long intervalScanTimeMin = 30000;
 long previousHours = 0;
-long intervalScanTimeHour = 1; 
-
+long intervalScanTimeHour = 1;
 
 // long previousMillis2 = 0;
-// long intervalScan2 = 100; 
+// long intervalScan2 = 100;
 
 ///////////////////////
 
@@ -57,22 +54,22 @@ void serialFlush()
 void KarakuriBluetooth::Update()
 {
 
-     //unsigned long currentMins = ( millis()/1000 ) / 60;    //Medir en Minutos
-     unsigned long currentMins = millis();    //Medir en Minutos
-     unsigned long currentHours = ( ( millis()/1000 ) / 60 ) / 60;    //Medir en Horas
-        
+    // unsigned long currentMins = ( millis()/1000 ) / 60;    //Medir en Minutos
+    unsigned long currentMins = millis();                       // Medir en Minutos
+    unsigned long currentHours = ((millis() / 1000) / 60) / 60; // Medir en Horas
 
-        if (currentMins - previousMins > intervalScanTimeMin){
-            act.GetTimeNow();
-            act.CheckTimer();
-            previousMins = currentMins;
-        }
+    if (currentMins - previousMins > intervalScanTimeMin)
+    {
+        act.GetTimeNow();
+        act.CheckTimer();
+        previousMins = currentMins;
+    }
 
-        if (currentHours - previousHours > intervalScanTimeHour){
-            //act.CheckDayStatus();
-            previousHours = currentHours;
-        }
-
+    if (currentHours - previousHours > intervalScanTimeHour)
+    {
+        // act.CheckDayStatus();
+        previousHours = currentHours;
+    }
 
     str = "";
     if (BT.available())
@@ -96,23 +93,24 @@ void KarakuriBluetooth::Update()
     {
 
     case 0:
-        
+
         dato[0] = 0;
         break;
-        
+
     case 10:
-        if(ActivityStatus){
-            act.movimientos(20,2);
+        if (ActivityStatus)
+        {
+            act.movimientos(20, 2);
         }
         dato[0] = 0;
         break;
 
-    case 1: 
+    case 1:
         act.MoveSpyder(dato[1]);
         dato[0] = 0;
         break;
 
-    case 2: //Configurar Set Alto
+    case 2: // Configurar Set Alto
         Serial.print("Distance HIGH recieved: ");
         Serial.println(dato[1]);
 
@@ -120,7 +118,7 @@ void KarakuriBluetooth::Update()
         dato[0] = 0;
         break;
 
-    case 3: //Configurar Set Bajo
+    case 3: // Configurar Set Bajo
         Serial.print("Distance LOW recieved: ");
         Serial.println(dato[1]);
 
@@ -137,7 +135,7 @@ void KarakuriBluetooth::Update()
 
         act.setON(dato);
         dato[0] = 0;
-    break;
+        break;
 
     case 5:
         Serial.print("Time recieved: ");
@@ -145,14 +143,14 @@ void KarakuriBluetooth::Update()
         Serial.print(":");
         Serial.print(dato[2]);
 
-         act.setOFF(dato);
+        act.setOFF(dato);
         dato[0] = 0;
-    break;
+        break;
 
-    case 6://Setear dias Activos
+    case 6: // Setear dias Activos
         // El contenido de entrada serial es del tipo: 6,domingo,true
         // Es mejor opcion cambiar al tipo de formato: 6,6,1;
-        //Para poder usar correctamente la funcion PermanentValues::WR_day
+        // Para poder usar correctamente la funcion PermanentValues::WR_day
 
         // //usar el formato para los dos valores siguientes del Serial de esta forma:
         // Lunes = 0
@@ -161,69 +159,62 @@ void KarakuriBluetooth::Update()
         // Jueves = 3
         // Viernes = 4
         // Sabado = 5
-        // Domingo = 6 
+        // Domingo = 6
 
         // El tercer valor corresponde a el booleano true = 1 y false =  0
 
-        act.setDays(dato); //FUNCION ORIGINAL
+        act.setDays(dato); // FUNCION ORIGINAL
 
-
-         //act.atras(0); //Prueba de conteo
-        //act.movimientos(20,2);
+        // act.atras(0); //Prueba de conteo
+        // act.movimientos(20,2);
         dato[0] = 0;
 
-    break;
+        break;
 
+    case 9: // Boton Home
 
-    case 9: //Boton Home
-        
-        //Funcion de prueba usada para verificar Seteto y obtencion de Informacion Permanente
-        // act.getTimesProgram();
-        // act.getLevels();
-        // act.PrintTimes();
-        // act.PrintLevels();
+        // Funcion de prueba usada para verificar Seteto y obtencion de Informacion Permanente
+        //  act.getTimesProgram();
+        //  act.getLevels();
+        //  act.PrintTimes();
+        //  act.PrintLevels();
 
-        //Funcion Original
+        // Funcion Original
         act.home();
 
         dato[0] = 0;
-    break;
-    
+        break;
 
     default:
         // colocar movimientos pero en cada instante
         Serial.println("Sistema tele operado");
-        //act.tele((int)dato[1]);
+        // act.tele((int)dato[1]);
         serialFlush();
         dato[0] = 0;
         ti = 0;
         break;
     }
 
+    // if(act.SpiderDayState){
+    if (act.DeviceTimeStatus)
+    {
 
-    //if(act.SpiderDayState){
-        if(act.DeviceTimeStatus){
+        unsigned long currentTime = millis(); // Medir en millis
 
-            unsigned long currentTime =  millis();    //Medir en millis
-        
-
-        if (currentTime - previousTime > intervalScanTime){
-            //act.GetTimeNow();
+        if (currentTime - previousTime > intervalScanTime)
+        {
+            // act.GetTimeNow();
             Serial.println("Activated Loop");
             previousTime = currentTime;
         }
-            
-        }
-   // }
+    }
+    // }
 
+    unsigned long currentTime2 = millis(); // Medir en millis
 
-        unsigned long currentTime2 =  millis();    //Medir en millis
-        
-
-        if (currentTime2 - previousTime2 > intervalScanTime2){
-            act.CheckLenght();
-             previousTime2 = currentTime2;
-        }
-    
-    
+    if (currentTime2 - previousTime2 > intervalScanTime2)
+    {
+        act.CheckLenght();
+        previousTime2 = currentTime2;
+    }
 }

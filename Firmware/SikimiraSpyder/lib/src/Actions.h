@@ -11,7 +11,7 @@ class Actions
     const int moveSpeed = 150;
     const int minSpeed = 48;
     const int factor = 23;
-    //const int Switch;
+    // const int Switch;
 
     enum Commands
     {
@@ -34,7 +34,7 @@ public:
     void atrasMin();
 
     void home();
-    void CheckLenght();   
+    void CheckLenght();
     void CalcLenght();
     void MotorStatus();
     void TimerCheck();
@@ -43,7 +43,7 @@ public:
 
     void GetTimeNow();
 
-    const int Switch=35;
+    const int Switch = 35;
 
     void setON(int datoR[3]);
     void setOFF(int datoR[3]);
@@ -60,8 +60,9 @@ public:
 
     void MovingLoop();
 
-    bool SpiderTimeState=false;
-    bool SpiderDayState=false;
+    bool SpiderTimeState = false;
+    bool SpiderDayState = false;
     bool DeviceTimeStatus;
+
 private:
 };

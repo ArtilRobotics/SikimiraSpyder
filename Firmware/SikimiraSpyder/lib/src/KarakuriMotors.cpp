@@ -45,9 +45,10 @@ void analogWriteESP(uint8_t channel, uint32_t value, uint32_t valueMax = 255)
     ledcWrite(channel, duty);
 }
 
-void KarakuriMotors::init3(){
+void KarakuriMotors::init3()
+{
     pinMode(sensor, INPUT);
-    attachInterrupt(sensor,interrupcion, FALLING);
+    attachInterrupt(sensor, interrupcion, FALLING);
     Serial.println("ActivateInterruption");
 }
 
@@ -57,17 +58,17 @@ void KarakuriMotors::init2()
     pinMode(STBY, OUTPUT);
     pinMode(AIN1, OUTPUT);
     pinMode(AIN2, OUTPUT);
-    //pinMode(BIN1, OUTPUT);
-    //pinMode(BIN2, OUTPUT);
+    // pinMode(BIN1, OUTPUT);
+    // pinMode(BIN2, OUTPUT);
 
     // Setup timer and attach timer to a led pin
     ledcSetup(CHANNEL_0, BASE_FREQ, TIMER_13_BIT);
-    //ledcSetup(CHANNEL_1, BASE_FREQ, TIMER_13_BIT);
+    // ledcSetup(CHANNEL_1, BASE_FREQ, TIMER_13_BIT);
     ledcAttachPin(PWM_A, CHANNEL_0);
-    //ledcAttachPin(PWM_B, CHANNEL_1);
+    // ledcAttachPin(PWM_B, CHANNEL_1);
 }
 
-// enable/disable flipping of left motor 
+// enable/disable flipping of left motor
 void KarakuriMotors::flipLeftMotor(bool flip)
 {
     flipLeft = flip;
@@ -111,42 +112,52 @@ void KarakuriMotors::setSpeed(int16_t speed)
 
 // set speed for both motors
 
-void KarakuriMotors::attenuatedSpeeds(float leftSpeed,int16_t rightSpeed)
+void KarakuriMotors::attenuatedSpeeds(float leftSpeed, int16_t rightSpeed)
 {
-    //float leftS=leftSpeed;
-    //float rightS=rightSpeed;
-    bool atenuacion =true;
-    while (atenuacion){
-        
-        velocitysmoothed_R = (rightSpeed*0.05)+(velocityPrev_R*0.95);
+    // float leftS=leftSpeed;
+    // float rightS=rightSpeed;
+    bool atenuacion = true;
+    while (atenuacion)
+    {
+
+        velocitysmoothed_R = (rightSpeed * 0.05) + (velocityPrev_R * 0.95);
         velocityPrev_R = velocitysmoothed_R;
         setSpeed(velocitysmoothed_R);
 
-        velocitysmoothed_L = (leftSpeed*0.05)+(velocityPrev_L*0.95);
+        velocitysmoothed_L = (leftSpeed * 0.05) + (velocityPrev_L * 0.95);
         velocityPrev_L = velocitysmoothed_L;
 
-        //delay(10);
-        if (velocitysmoothed_R<rightSpeed+0.5 && velocitysmoothed_R>rightSpeed-0.5)
+        // delay(10);
+        if (velocitysmoothed_R < rightSpeed + 0.5 && velocitysmoothed_R > rightSpeed - 0.5)
         {
-            atenuacion=false;
+            atenuacion = false;
         }
     }
-
 }
 
-void KarakuriMotors::movingSpyder(bool directtionBool){
+void KarakuriMotors::movingSpyder(bool directtionBool)
+{
 
-        float moving=(2*pi*radius*float(contador))/float(n_holes);
+    float moving = (2 * pi * radius * float(contador)) / float(n_holes);
 
-        if(directtionBool==true){lenght=lenght+moving;}
-        else{lenght=lenght-moving;}
+    if (directtionBool == true)
+    {
+        lenght = lenght + moving;
+    }
+    else
+    {
+        lenght = lenght - moving;
+    }
 
-        if(lenght<=0){lenght=0;}
+    if (lenght <= 0)
+    {
+        lenght = 0;
+    }
 
-        contador=0;
+    contador = 0;
+}
 
-  }
-
-void KarakuriMotors::interrupcion() {
+void KarakuriMotors::interrupcion()
+{
     contador++;
-  }
+}

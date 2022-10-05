@@ -8,7 +8,7 @@ class PermanentValues
 public:
     void init();
     void WR_distance(bool Position, int Value, bool Write);
-    void WR_time(bool SetTime, int ValueHour,int ValueMin, bool Write);
+    void WR_time(bool SetTime, int ValueHour, int ValueMin, bool Write);
     void WR_day(int Day, bool SetValue, bool Write);
     int ValueHigh;
     int ValueLow;
@@ -19,9 +19,7 @@ public:
     bool dayStatus;
     bool dayConfig[7];
     void getTime();
-    
+
 private:
-     
-    
 };
 #endif

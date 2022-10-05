@@ -6,25 +6,25 @@
 
 KarakuriMotors motors;
 TimeClock WifiTime;
-PermanentValues SetValues1; 
-int ledPin = 2 ;
-const int Switch=35;
-long max_lenght=2000;
-int maxSpeed=50;
+PermanentValues SetValues1;
+int ledPin = 2;
+const int Switch = 35;
+long max_lenght = 2000;
+int maxSpeed = 50;
 
-bool DeviceTimeStatus=false; //Varibale para activar o no el movimiento automatico
+bool DeviceTimeStatus = false; // Variable para activar o no el movimiento automático
 
 long previousMillis = 0;
-long intervalScan = 100; 
+long intervalScan = 100;
 
 long previousMillis2 = 0;
-long intervalScan2 = 100; 
+long intervalScan2 = 100;
 
-
-void Actions::init(){
+void Actions::init()
+{
     WifiTime.init();
     pinMode(Switch, INPUT);
-    //pinMode(Encoder, INPUT);
+    // pinMode(Encoder, INPUT);
     pinMode(ledPin, OUTPUT);
     motors.init3();
     getTimesProgram();
@@ -32,8 +32,8 @@ void Actions::init(){
     CheckDayStatus();
     CheckTimer();
     home();
-    
-    //motors
+
+    // motors
 }
 
 void Actions::movimientos(int comando, int argument)
@@ -42,7 +42,7 @@ void Actions::movimientos(int comando, int argument)
     {
     case PAUSA:
         pausa(1);
-        delay(argument*1000);
+        delay(argument * 1000);
         break;
     case ARRIBA:
         atrasMin();
@@ -53,29 +53,29 @@ void Actions::movimientos(int comando, int argument)
         adelanteMax();
         pausa(1);
         break;
-    
+
     case SPIDERONE:
-        adelante(100,250);
+        adelante(100, 250);
         pausa(argument);
-        atras(90,100);
-         pausa(argument);
-        atras(80,100);
+        atras(90, 100);
         pausa(argument);
-        atras(70,100);
-         pausa(argument);
-        atras(60,100);
-         pausa(argument);
-        atras(50,100);
-         pausa(argument);
-        adelante(80,250);
-         pausa(argument);
-        atras(20,100);
-         pausa(argument);
-        atras(0,100);
+        atras(80, 100);
+        pausa(argument);
+        atras(70, 100);
+        pausa(argument);
+        atras(60, 100);
+        pausa(argument);
+        atras(50, 100);
+        pausa(argument);
+        adelante(80, 250);
+        pausa(argument);
+        atras(20, 100);
+        pausa(argument);
+        atras(0, 100);
 
         break;
     case SPIDERTWO:
-        
+
         pausa(1);
         break;
     default:
@@ -87,71 +87,70 @@ void Actions::pausa(int argument)
 {
 
     Serial.println("Se detiene el motor");
-     motors.setSpeed(0);
+    motors.setSpeed(0);
     Serial.print("Espera por ");
     Serial.print(argument);
     Serial.println("s");
 
-    delay(argument*1000);
-    
+    delay(argument * 1000);
 }
 
 void Actions::adelante(int Porcentage, int Speed)
 {
     getLevels();
 
-    float position = SetValues1.ValueLow * (float(Porcentage)/100.);
+    float position = SetValues1.ValueLow * (float(Porcentage) / 100.);
 
     Serial.print("Ejecutando adelante hasta llegar a la posición máxima: ");
     Serial.println(position);
-    motors.directionM=true;
+    motors.directionM = true;
     motors.setSpeed(Speed);
 
-    while(motors.lenght<position){
+    while (motors.lenght < position)
+    {
         MovingLoop();
-    } 
+    }
     Serial.println("Llego a la posición Final Definida");
     motors.setSpeed(0);
-
-
 }
 
 void Actions::atras(int Porcentage, int Speed)
 {
     getLevels();
 
-    float position = SetValues1.ValueLow * (float(Porcentage)/100);
-    
-    if(position<SetValues1.ValueHigh){
+    float position = SetValues1.ValueLow * (float(Porcentage) / 100);
+
+    if (position < SetValues1.ValueHigh)
+    {
 
         Serial.print("Ejecutando adelante hasta llegar a la posición: ");
         Serial.println(SetValues1.ValueHigh);
-        motors.directionM=false;
+        motors.directionM = false;
         motors.setSpeed(-Speed);
 
-        while(motors.lenght>SetValues1.ValueHigh){
+        while (motors.lenght > SetValues1.ValueHigh)
+        {
             MovingLoop();
-        } 
+        }
         Serial.println("Llego a la posición Final Definida");
         motors.setSpeed(0);
-
     }
 
-    if(position>=SetValues1.ValueHigh){
+    if (position >= SetValues1.ValueHigh)
+    {
 
         Serial.print("Ejecutando atras hasta llegar a la posición: ");
         Serial.println(position);
-        motors.directionM=false;
+        motors.directionM = false;
         motors.setSpeed(-Speed);
 
-        while(motors.lenght>position){
+        while (motors.lenght > position)
+        {
             MovingLoop();
-        } 
+        }
         Serial.println("Llego a la posición Final Definida");
         motors.setSpeed(0);
-
     }
-
 }
 
 void Actions::adelanteMax()
@@ -160,16 +159,15 @@ void Actions::adelanteMax()
     getLevels();
     Serial.print("Ejecutando adelante hasta llegar a la posición máxima: ");
     Serial.println(SetValues1.ValueHigh);
-    motors.directionM=true;
+    motors.directionM = true;
     motors.setSpeed(maxSpeed);
 
-    while(motors.lenght<SetValues1.ValueHigh){
+    while (motors.lenght < SetValues1.ValueHigh)
+    {
         MovingLoop();
-    } 
+    }
     Serial.println("Llego a la posición Final Máxima");
     motors.setSpeed(0);
-
-
 }
 
 void Actions::atrasMin()
@@ -177,73 +175,81 @@ void Actions::atrasMin()
     getLevels();
     Serial.print("Ejecutando atras hasta llegar a la posición minima: ");
     Serial.println(SetValues1.ValueLow);
-    motors.directionM=false;
+    motors.directionM = false;
     motors.setSpeed(maxSpeed);
 
-    while(motors.lenght>SetValues1.ValueLow){
+    while (motors.lenght > SetValues1.ValueLow)
+    {
         MovingLoop();
-    } 
+    }
     Serial.println("Llego a la posición Final Minima");
     motors.setSpeed(0);
 }
 
 void Actions::tele(int estado)
 {
-   
 }
 
 void Actions::home()
 {
-      Serial.println(digitalRead(Switch));
-      
-      if(digitalRead(Switch)!=HIGH){
+    Serial.println(digitalRead(Switch));
+
+    if (digitalRead(Switch) != HIGH)
+    {
 
         motors.setSpeed(0);
-         Serial.println("Button Push");
-      }
-
-      else{
-         Serial.println("Button No Push - Activate Motor");
-         motors.setSpeed(-100); // SET TEST SPEED
-
-         while(digitalRead(Switch)==HIGH){}
-         
-         motors.setSpeed(0);
-         Serial.println("Button Push");
-        
-      }
-
-      motors.setSpeed(10);
-      delay(1000);
-      motors.setSpeed(0);
-      motors.lenght=0;
-
-}
-
-void Actions::CheckLenght(){
-            if((motors.lenght<=0 && motors.directionM==false) || digitalRead(Switch)== LOW){
-                motors.setSpeed(0);
-                motors.lenght=0;
-
-                if(digitalRead(Switch)== LOW){home();}
-            }
-
-            else if(motors.lenght>max_lenght && motors.directionM){
-                motors.setSpeed(0);
-
-            }
+        Serial.println("Button Push");
     }
 
-   
- void Actions::CalcLenght(){
+    else
+    {
+        Serial.println("Button No Push - Activate Motor");
+        motors.setSpeed(-100); // SET TEST SPEED
+
+        while (digitalRead(Switch) == HIGH)
+        {
+        }
+
+        motors.setSpeed(0);
+        Serial.println("Button Push");
+    }
+
+    motors.setSpeed(10);
+    delay(1000);
+    motors.setSpeed(0);
+    motors.lenght = 0;
+}
+
+void Actions::CheckLenght()
+{
+    if ((motors.lenght <= 0 && motors.directionM == false) || digitalRead(Switch) == LOW)
+    {
+        motors.setSpeed(0);
+        motors.lenght = 0;
+
+        if (digitalRead(Switch) == LOW)
+        {
+            home();
+        }
+    }
+
+    else if (motors.lenght > max_lenght && motors.directionM)
+    {
+        motors.setSpeed(0);
+    }
+}
+
+void Actions::CalcLenght()
+{
     motors.movingSpyder(motors.directionM);
- }
+}
 
- void Actions::MotorStatus(){
+void Actions::MotorStatus()
+{
 
-      Serial.print(" La Posicion es: ");
-      Serial.println(motors.lenght);
- }
+    Serial.print(" La Posicion es: ");
+    Serial.println(motors.lenght);
+}
 
 //  void Actions::TimerCheck(){
 
@@ -256,7 +262,7 @@ void Actions::CheckLenght(){
 //             Serial.println("Actvivated");
 //           };
 //       }
-    
+
 //       else if ((SpiderTimeState == true)){
 //          WifiTime.datoTC[0] = WifiTime.datoTOFF[0];
 //          WifiTime.datoTC[1] = WifiTime.datoTOFF[1];
@@ -273,29 +279,35 @@ void Actions::CheckLenght(){
 //           };
 
 //       }
-         
 
-      // Hacemos que el contenido de la variable llegue al LED
-     //digitalWrite(ledPin, SpiderTimeState);
- //}
-        
+// Hacemos que el contenido de la variable llegue al LED
+// digitalWrite(ledPin, SpiderTimeState);
+//}
 
 void Actions::MoveSpyder(int dato)
-{   Serial.print("Dato Recibido: ");
+{
+    Serial.print("Dato Recibido: ");
     Serial.println(dato);
-    if(dato>motors.lenght){adelante(dato,5);}
-    if(dato<motors.lenght){atras(dato,5);}
-    
-    //motors.setSpeed(dato);
-       
+    if (dato > motors.lenght)
+    {
+        adelante(dato, 5);
+    }
+    if (dato < motors.lenght)
+    {
+        atras(dato, 5);
+    }
+
+    // motors.setSpeed(dato);
 }
 
-void Actions::GetTimeNow(){
+void Actions::GetTimeNow()
+{
     WifiTime.printLocalTime();
 }
 
-void Actions::setON(int datoR[3]){
-   
+void Actions::setON(int datoR[3])
+{
+
     int datoS[2];
 
     datoS[0] = datoR[1];
@@ -304,8 +316,9 @@ void Actions::setON(int datoR[3]){
     WifiTime.setTimeON(datoS);
 }
 
-void Actions::setOFF(int datoR[3]){
-     
+void Actions::setOFF(int datoR[3])
+{
+
     int datoS[2];
 
     datoS[0] = datoR[1];
@@ -314,28 +327,27 @@ void Actions::setOFF(int datoR[3]){
     WifiTime.setTimeOFF(datoS);
 }
 
-void Actions::getTimesProgram(){
-//    SetValues1.WR_time(true, 0,0,false);
-//    SetValues1.WR_time(false, 0,0,false);
+void Actions::getTimesProgram()
+{
+    //    SetValues1.WR_time(true, 0,0,false);
+    //    SetValues1.WR_time(false, 0,0,false);
 
-   SetValues1.getTime();
+    SetValues1.getTime();
 
-   WifiTime.datoTON[0]=SetValues1.ValueHourON;
-   WifiTime.datoTON[1]=SetValues1.ValueMinON;
-   WifiTime.datoTOFF[0]=SetValues1.ValueHourOFF;
-   WifiTime.datoTOFF[1]=SetValues1.ValueMinOFF;
-
-  
+    WifiTime.datoTON[0] = SetValues1.ValueHourON;
+    WifiTime.datoTON[1] = SetValues1.ValueMinON;
+    WifiTime.datoTOFF[0] = SetValues1.ValueHourOFF;
+    WifiTime.datoTOFF[1] = SetValues1.ValueMinOFF;
 }
 
-void Actions::PrintTimes(){
-    
+void Actions::PrintTimes()
+{
+
     Serial.print("Hora de activación: ");
-    Serial.print( WifiTime.datoTON[0]);
+    Serial.print(WifiTime.datoTON[0]);
     Serial.print(":");
     Serial.println(WifiTime.datoTON[1]);
 
-    
     Serial.print("Hora de desactivación: ");
     Serial.print(WifiTime.datoTOFF[0]);
     Serial.print(":");
@@ -369,131 +381,132 @@ void Actions::PrintTimes(){
     Serial.print("D");
     Serial.print(":");
     Serial.println(SetValues1.dayConfig[6]);
-    
 }
 
+void Actions::setHigh(int datoR)
+{
 
-void Actions::setHigh(int datoR){
-   
-  SetValues1.WR_distance(true, datoR, true);
+    SetValues1.WR_distance(true, datoR, true);
 }
 
-void Actions::setLow(int datoR){
-   
-  SetValues1.WR_distance(false, datoR, true);
+void Actions::setLow(int datoR)
+{
+
+    SetValues1.WR_distance(false, datoR, true);
 }
 
-
-void Actions::getLevels(){
-   SetValues1.WR_distance(true, 0,false);
-   SetValues1.WR_distance(false, 0,false);
+void Actions::getLevels()
+{
+    SetValues1.WR_distance(true, 0, false);
+    SetValues1.WR_distance(false, 0, false);
 }
 
-void Actions::PrintLevels(){
+void Actions::PrintLevels()
+{
     Serial.print("Nivel Alto: ");
     Serial.println(SetValues1.ValueHigh);
 
-     Serial.print("Nivel Bajo: ");
+    Serial.print("Nivel Bajo: ");
     Serial.println(SetValues1.ValueLow);
 
-      Serial.print("Longitud Actual: ");
+    Serial.print("Longitud Actual: ");
     Serial.println(motors.lenght);
-
 }
 
-void Actions::setDays(int datoR[3]){
+void Actions::setDays(int datoR[3])
+{
     bool SetValue;
-    
-    if(datoR[2] == 1){SetValue=true;} 
-    else if(datoR[2] == 0){SetValue=false;}
 
+    if (datoR[2] == 1)
+    {
+        SetValue = true;
+    }
+    else if (datoR[2] == 0)
+    {
+        SetValue = false;
+    }
 
     SetValues1.WR_day(datoR[1], SetValue, true);
-
 }
 
-void Actions::CheckDayStatus(){
+void Actions::CheckDayStatus()
+{
 
-   SetValues1.WR_day(WifiTime.TodayDay(), 0, false);
-   SpiderDayState = SetValues1.dayStatus;
+    SetValues1.WR_day(WifiTime.TodayDay(), 0, false);
+    SpiderDayState = SetValues1.dayStatus;
 }
 
-
-void Actions::CheckTimer(){ // Funcion para verificar el horario de activacion
+void Actions::CheckTimer()
+{ // Funcion para verificar el horario de activacion
     getTimesProgram();
-    //Falta agregregar la funcion para comprobar el dia y que este active o no  la varibale DeviceTimeStatus
-    //Agregar como funcion de verificacion dentro de la libreria TimeClock 
+    // Falta agregregar la funcion para comprobar el dia y que este active o no  la varibale DeviceTimeStatus
+    // Agregar como funcion de verificacion dentro de la libreria TimeClock
 
-    if (DeviceTimeStatus == false){
-         
-        ///////////////////////////////////////////
-         Serial.println("DeviceTimeStatus = false");
-         Serial.print("TimeON:");
-         Serial.print(WifiTime.datoTON[0]);
-         Serial.print(":");
-         Serial.println(WifiTime.datoTON[1]);
-        /////////////////////////////////////////////
-          if (WifiTime.Compare_Time()==true){
-            Serial.println("Actvivated");
-            DeviceTimeStatus=true;
-            //home();
-          };
-      }
-    
-      else if (DeviceTimeStatus == true){
-         
-          ///////////////////////////////////////////
-         Serial.println("DeviceTimeStatus = true");
-         Serial.print("TimeOFF:");
-         Serial.print(WifiTime.datoTOFF[0]);
-         Serial.print(":");
-         Serial.println(WifiTime.datoTOFF[1]);
-        /////////////////////////////////////////////
-          if (WifiTime.Compare_Time()==false){
-            Serial.println("Desactvivated");
-            DeviceTimeStatus=false;
-            //home();
-          };
-      }
-
-      digitalWrite(ledPin, DeviceTimeStatus);
-
-}
-
-void Actions::MovingLoop(){
+    if (DeviceTimeStatus == false)
     {
-        
-      unsigned long currentMillis = millis();    // Se toma el tiempo actual
 
- 
-            if (currentMillis - previousMillis > intervalScan){
+        ///////////////////////////////////////////
+        Serial.println("DeviceTimeStatus = false");
+        Serial.print("TimeON:");
+        Serial.print(WifiTime.datoTON[0]);
+        Serial.print(":");
+        Serial.println(WifiTime.datoTON[1]);
+        /////////////////////////////////////////////
+        if (WifiTime.Compare_Time() == true)
+        {
+            Serial.println("Actvivated");
+            DeviceTimeStatus = true;
+            // home();
+        };
+    }
 
-                    previousMillis = currentMillis;
-            
-                    //act.GetTimeNow();
-                CalcLenght();
-                    
-                }
+    else if (DeviceTimeStatus == true)
+    {
 
-        unsigned long currentMillis2 = millis();    // Se toma el tiempo actual
+        ///////////////////////////////////////////
+        Serial.println("DeviceTimeStatus = true");
+        Serial.print("TimeOFF:");
+        Serial.print(WifiTime.datoTOFF[0]);
+        Serial.print(":");
+        Serial.println(WifiTime.datoTOFF[1]);
+        /////////////////////////////////////////////
+        if (WifiTime.Compare_Time() == false)
+        {
+            Serial.println("Desactvivated");
+            DeviceTimeStatus = false;
+            // home();
+        };
+    }
 
- 
-            if (currentMillis2 - previousMillis2 > intervalScan2){
-
-                previousMillis2 = currentMillis2;
-        
-                //act.GetTimeNow();
-                MotorStatus();
-            
-            }
-
-            CheckLenght();
-    } 
-         
+    digitalWrite(ledPin, DeviceTimeStatus);
 }
 
+void Actions::MovingLoop()
+{
+    {
 
+        unsigned long currentMillis = millis(); // Se toma el tiempo actual
 
+        if (currentMillis - previousMillis > intervalScan)
+        {
 
+            previousMillis = currentMillis;
 
+            // act.GetTimeNow();
+            CalcLenght();
+        }
 
+        unsigned long currentMillis2 = millis(); // Se toma el tiempo actual
+
+        if (currentMillis2 - previousMillis2 > intervalScan2)
+        {
+
+            previousMillis2 = currentMillis2;
+
+            // act.GetTimeNow();
+            MotorStatus();
+        }
+
+        CheckLenght();
+    }
+}
