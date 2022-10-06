@@ -137,7 +137,7 @@ void KarakuriMotors::attenuatedSpeeds(float leftSpeed, int16_t rightSpeed)
 
 void KarakuriMotors::movingSpyder(bool directtionBool)
 {
-
+    
     float moving = (2 * pi * radius * float(contador)) / float(n_holes);
 
     if (directtionBool == true)
@@ -155,6 +155,7 @@ void KarakuriMotors::movingSpyder(bool directtionBool)
     }
 
     contador = 0;
+    moving = 0;
 }
 
 void KarakuriMotors::interrupcion()

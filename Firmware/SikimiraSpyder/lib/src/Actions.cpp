@@ -10,15 +10,16 @@ PermanentValues SetValues1;
 int ledPin = 2;
 const int Switch = 35;
 long max_lenght = 2000;
-int maxSpeed = 50;
+int maxSpeed = 250;
 
 bool DeviceTimeStatus = false; // Variable para activar o no el movimiento automático
 
 long previousMillis = 0;
-long intervalScan = 100;
+long intervalScan = 50;
 
 long previousMillis2 = 0;
-long intervalScan2 = 100;
+long intervalScan2 = 500;
+int Sequence_Now;
 
 void Actions::init()
 {
@@ -38,6 +39,8 @@ void Actions::init()
 
 void Actions::movimientos(int comando, int argument)
 {
+    int random_num;
+
     switch (comando)
     {
     case PAUSA:
@@ -55,6 +58,39 @@ void Actions::movimientos(int comando, int argument)
         break;
 
     case SPIDERONE:
+        Serial.println("SPIDERONE");
+        adelante(100, 250);
+        pausa(argument);
+        atras(0, 100);
+        pausa(argument);
+        atras(100, 100);
+        pausa(argument);
+        atras(50, 100);
+        pausa(argument);
+        atras(100, 100);
+        pausa(argument);
+        atras(0, 100);
+        pausa(1000);
+
+        break;
+    case SPIDERTWO:
+        Serial.println("SPIDERTWO");
+        adelante(20, 250);
+        pausa(argument);
+        adelante(40, 250);
+        pausa(argument);
+        adelante(60, 250);
+        pausa(argument);
+        adelante(80, 250);
+        pausa(argument);
+        adelante(100, 250);
+        pausa(argument);
+        atras(0, 100);
+        pausa(1000);
+        break;
+    
+    case SPIDERTHREE:
+        Serial.println("SPIDERTHREE");
         adelante(100, 250);
         pausa(argument);
         atras(90, 100);
@@ -72,14 +108,17 @@ void Actions::movimientos(int comando, int argument)
         atras(20, 100);
         pausa(argument);
         atras(0, 100);
-
+        pausa(1000);
         break;
-    case SPIDERTWO:
 
-        pausa(1);
-        break;
+    case RANDOM:
+        Serial.println("RANDOM");
+        random_num = 1 + (rand() % 3);
+        movimientos(random_num, 500);
+    break;
+
     default:
-        pausa(1);
+        pausa(100);
         break;
     }
 }
@@ -90,16 +129,17 @@ void Actions::pausa(int argument)
     motors.setSpeed(0);
     Serial.print("Espera por ");
     Serial.print(argument);
-    Serial.println("s");
+    Serial.println("ms");
 
-    delay(argument * 1000);
+    delay(argument );
 }
 
 void Actions::adelante(int Porcentage, int Speed)
-{
+{   
+
     getLevels();
 
-    float position = SetValues1.ValueLow * (float(Porcentage) / 100.);
+    float position = SetValues1.ValueHigh +(SetValues1.ValueLow - SetValues1.ValueHigh ) * (float(Porcentage) / float (100));
 
     Serial.print("Ejecutando adelante hasta llegar a la posición máxima: ");
     Serial.println(position);
@@ -110,6 +150,8 @@ void Actions::adelante(int Porcentage, int Speed)
     {
         MovingLoop();
     }
+
+    if((motors.lenght >= position)) delay(100);
     Serial.println("Llego a la posición Final Definida");
     motors.setSpeed(0);
 }
@@ -118,23 +160,7 @@ void Actions::atras(int Porcentage, int Speed)
 {
     getLevels();
 
-    float position = SetValues1.ValueLow * (float(Porcentage) / 100);
-
-    if (position < SetValues1.ValueHigh)
-    {
-
-        Serial.print("Ejecutando adelante hasta llegar a la posición: ");
-        Serial.println(SetValues1.ValueHigh);
-        motors.directionM = false;
-        motors.setSpeed(-Speed);
-
-        while (motors.lenght > SetValues1.ValueHigh)
-        {
-            MovingLoop();
-        }
-        Serial.println("Llego a la posición Final Definida");
-        motors.setSpeed(0);
-    }
+    float position = SetValues1.ValueHigh +(SetValues1.ValueLow - SetValues1.ValueHigh ) * (float(Porcentage) / float (100));
 
     if (position >= SetValues1.ValueHigh)
     {
@@ -148,6 +174,8 @@ void Actions::atras(int Porcentage, int Speed)
         {
             MovingLoop();
         }
+        if((motors.lenght <= position)) delay(100);
+
         Serial.println("Llego a la posición Final Definida");
         motors.setSpeed(0);
     }
@@ -218,6 +246,8 @@ void Actions::home()
     delay(1000);
     motors.setSpeed(0);
     motors.lenght = 0;
+    delay(500);
+    adelante(0,10);
 }
 
 void Actions::CheckLenght()
@@ -227,10 +257,7 @@ void Actions::CheckLenght()
         motors.setSpeed(0);
         motors.lenght = 0;
 
-        if (digitalRead(Switch) == LOW)
-        {
             home();
-        }
     }
 
     else if (motors.lenght > max_lenght && motors.directionM)
@@ -247,7 +274,7 @@ void Actions::CalcLenght()
 void Actions::MotorStatus()
 {
 
-    Serial.print(" La Posicion es: ");
+    Serial.print(" Status Motor - La Posicion es: ");
     Serial.println(motors.lenght);
 }
 
@@ -288,13 +315,19 @@ void Actions::MoveSpyder(int dato)
 {
     Serial.print("Dato Recibido: ");
     Serial.println(dato);
-    if (dato > motors.lenght)
+    
+    
+    float position = SetValues1.ValueHigh +(SetValues1.ValueLow - SetValues1.ValueHigh ) * ((float) dato / (float) 100);
+    Serial.print("Dato Traducido (Position): ");
+    Serial.println(position);
+
+    if (position > motors.lenght)
     {
-        adelante(dato, 5);
+        adelante(dato, 25);
     }
-    if (dato < motors.lenght)
+    if (position < motors.lenght)
     {
-        atras(dato, 5);
+        atras(dato, 25);
     }
 
     // motors.setSpeed(dato);
@@ -342,7 +375,7 @@ void Actions::getTimesProgram()
 
 void Actions::PrintTimes()
 {
-
+    getTimesProgram();
     Serial.print("Hora de activación: ");
     Serial.print(WifiTime.datoTON[0]);
     Serial.print(":");
@@ -381,6 +414,9 @@ void Actions::PrintTimes()
     Serial.print("D");
     Serial.print(":");
     Serial.println(SetValues1.dayConfig[6]);
+
+    Serial.print("Secuencia Activada: ");
+    Serial.println(SetValues1.Sequence_Select);
 }
 
 void Actions::setHigh(int datoR)
@@ -431,9 +467,12 @@ void Actions::setDays(int datoR[3])
 
 void Actions::CheckDayStatus()
 {
-
+    //Serial.print("Today is: ");
+    //Serial.println(WifiTime.TodayDay());
     SetValues1.WR_day(WifiTime.TodayDay(), 0, false);
     SpiderDayState = SetValues1.dayStatus;
+    //if(SpiderDayState==true){Serial.println("Today Spider Activate");}
+    
 }
 
 void Actions::CheckTimer()
@@ -474,16 +513,25 @@ void Actions::CheckTimer()
         {
             Serial.println("Desactvivated");
             DeviceTimeStatus = false;
-            // home();
+            home();
         };
     }
 
     digitalWrite(ledPin, DeviceTimeStatus);
 }
 
+void Actions::SetSequence(int Sequence){
+        SetValues1.WR_Sequence(Sequence, 0, true);
+    }
+
+void Actions::SetPeriodSequence(int Period){
+        SetValues1.WR_Sequence(0, Period, true);
+    }
+
+
+
 void Actions::MovingLoop()
 {
-    {
 
         unsigned long currentMillis = millis(); // Se toma el tiempo actual
 
@@ -508,5 +556,13 @@ void Actions::MovingLoop()
         }
 
         CheckLenght();
-    }
+
+}
+
+int Actions::Sequence_Update(){
+    SetValues1.WR_Sequence(0,0,false);
+    Period=SetValues1.PeriodSequence;
+    Serial.print("Periodo de Secuencia: ");
+    Serial.println(Period);
+    return SetValues1.Sequence_Select;
 }

@@ -16,16 +16,20 @@ const int dataLength = 3;
 int dato[dataLength];
 
 bool ActivityStatus = true;
+bool SliderStatus = false;
 
 // Definición de la bandera de estados del sistema
 int estado = 0;
+int DemoPin_D=34;
 
 long previousTime = 0;
 long intervalScanTime = 2000;
 long previousTime2 = 0;
 long intervalScanTime2 = 500;
+long previousSecs = 0;
+long intervalScanTimeSecs = 30;
 long previousMins = 0;
-long intervalScanTimeMin = 30000;
+long intervalScanTimeMin = 3;
 long previousHours = 0;
 long intervalScanTimeHour = 1;
 
@@ -39,6 +43,8 @@ void KarakuriBluetooth::Start()
     BT.begin("Sikimira");
     BT.begin(115200);
     Serial.println("BT iniciado");
+    int Secuencia_act=act.Sequence_Update();
+    
 }
 
 int ti = 0;
@@ -53,23 +59,39 @@ void serialFlush()
 
 void KarakuriBluetooth::Update()
 {
+    if(digitalRead(DemoPin_D)==LOW){
 
-    // unsigned long currentMins = ( millis()/1000 ) / 60;    //Medir en Minutos
-    unsigned long currentMins = millis();                       // Medir en Minutos
+    unsigned long currentSecs = millis()/1000;                       // Medir en Segundos
+    //unsigned long currentMins = (millis()/1000)/60;                  // Medir en Minutos
     unsigned long currentHours = ((millis() / 1000) / 60) / 60; // Medir en Horas
 
-    if (currentMins - previousMins > intervalScanTimeMin)
+    if (currentSecs - previousSecs > intervalScanTimeSecs)
     {
         act.GetTimeNow();
         act.CheckTimer();
-        previousMins = currentMins;
+        act.CheckDayStatus();
+        Serial.print("SliderStatus: ");
+        Serial.print(SliderStatus);
+        Serial.print(" - SpiderDayState: ");
+        Serial.print(act.SpiderDayState);
+        Serial.print(" - DeviceTimeStatus: ");
+        Serial.println(act.DeviceTimeStatus);
+        previousSecs = currentSecs;
     }
+
 
     if (currentHours - previousHours > intervalScanTimeHour)
     {
-        // act.CheckDayStatus();
+       // act.CheckDayStatus();
         previousHours = currentHours;
     }
+        
+    }
+    else{
+        act.SpiderDayState=true;
+        act.DeviceTimeStatus=true;
+    }
+    
 
     str = "";
     if (BT.available())
@@ -97,15 +119,9 @@ void KarakuriBluetooth::Update()
         dato[0] = 0;
         break;
 
-    case 10:
-        if (ActivityStatus)
-        {
-            act.movimientos(20, 2);
-        }
-        dato[0] = 0;
-        break;
 
     case 1:
+        serialFlush();
         act.MoveSpyder(dato[1]);
         dato[0] = 0;
         break;
@@ -171,6 +187,27 @@ void KarakuriBluetooth::Update()
 
         break;
 
+    case 7: //set Sequence
+
+        if (dato[1]==1){
+            SliderStatus=true;
+            Serial.println("Slider Status: ON");
+        }
+        else {SliderStatus=false;
+            Serial.println("Slider Status: OFF");}
+        
+        dato[0] = 0;
+
+        break;
+
+    case 8: //set Sequence
+
+        act.SetSequence(dato[1]);
+        act.PrintTimes();
+        dato[0] = 0;
+
+        break;
+
     case 9: // Boton Home
 
         // Funcion de prueba usada para verificar Seteto y obtencion de Informacion Permanente
@@ -181,7 +218,18 @@ void KarakuriBluetooth::Update()
 
         // Funcion Original
         act.home();
+        act.home();
+        dato[0] = 0;
+        break;
 
+       case 10:
+        ESP.restart();
+        dato[0] = 0;
+        break;
+
+        case 11:
+        act.SetPeriodSequence(dato[1]);
+        act.Sequence_Update();
         dato[0] = 0;
         break;
 
@@ -195,20 +243,43 @@ void KarakuriBluetooth::Update()
         break;
     }
 
-    // if(act.SpiderDayState){
+    if(SliderStatus != true){
+    if(act.SpiderDayState){
     if (act.DeviceTimeStatus)
     {
 
-        unsigned long currentTime = millis(); // Medir en millis
-
-        if (currentTime - previousTime > intervalScanTime)
+        
+        if (act.Period>0)
         {
-            // act.GetTimeNow();
-            Serial.println("Activated Loop");
-            previousTime = currentTime;
+        unsigned long currentMins = (millis()/1000)/60;                  // Medir en Minutos
+        if (currentMins - previousMins > act.Period )
+        {
+            Serial.println("Activated Loop cada: ");
+            Serial.print(act.Period);
+            Serial.println("Mins ");
+            Serial.print("Secuencia activada: ");
+            int Secuencia_act=act.Sequence_Update();
+            Serial.println(Secuencia_act);
+            act.movimientos(Secuencia_act, 500);
+            previousMins = currentMins;
         }
+        }
+
+        if (act.Period==0)
+        {
+            unsigned long currentTime = millis(); // Medir en millis
+            if (currentTime - previousTime >= intervalScanTime){
+                Serial.println("Activated Loop cada 2s");
+                Serial.print("Secuencia activada: ");
+                int Secuencia_act=act.Sequence_Update();
+                Serial.println(Secuencia_act);
+                act.movimientos(Secuencia_act, 500);
+                previousTime = currentTime;
+                }
+         }
     }
-    // }
+    }
+    }
 
     unsigned long currentTime2 = millis(); // Medir en millis
 

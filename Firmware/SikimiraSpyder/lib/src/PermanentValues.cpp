@@ -14,6 +14,8 @@ int ValueHourON;
 int ValueMinON;
 int ValueHourOFF;
 int ValueMinOFF;
+int Sequence_Select;
+int PeriodSequence;
 bool dayStatus;
 bool dayConfig[7];
 
@@ -245,8 +247,95 @@ void PermanentValues::WR_day(int Day, bool SetValue, bool Write)
             dayStatus = preferences.getBool("Sunday", SetValue);
         }
 
-        preferences.end();
+
     }
+
+    preferences.end();
+
+}
+
+void PermanentValues::WR_Sequence(int Sequence, int Period ,bool Write)
+{
+
+    preferences.begin("PermValues", false);
+
+    if (Write)
+    {
+
+        if (Sequence == 1)
+        {
+            preferences.putBool("Sequence1", true);
+            preferences.putBool("Sequence2", false);
+            preferences.putBool("Sequence3", false);
+            preferences.putBool("Random", false);
+            Serial.println("Set Sequence1 Status: ON");
+        }
+
+        else if (Sequence == 2)
+        {
+           preferences.putBool("Sequence1", false);
+            preferences.putBool("Sequence2", true);
+            preferences.putBool("Sequence3", false);
+            preferences.putBool("Random", false);
+            Serial.println("Set Sequence 2 Status: ON");
+        }
+
+        else if (Sequence == 3)
+        {
+           preferences.putBool("Sequence1", false);
+            preferences.putBool("Sequence2", false);
+            preferences.putBool("Sequence3", true);
+            preferences.putBool("Random", false);
+            Serial.println("Set Sequence 3 Status: ON");
+        }
+
+        else if (Sequence == 4)
+        {
+            preferences.putBool("Sequence1", false);
+            preferences.putBool("Sequence2", false);
+            preferences.putBool("Sequence3", false);
+            preferences.putBool("Random", true);
+            Serial.println("Set Sequence 4 Status: ON");
+        }
+
+        else if (Sequence == 0)
+        {
+            preferences.putUChar("PeriodT", Period);
+            Serial.print("Set Period Sequence on:");
+            Serial.println(Period);
+        }
+
+
+    }
+
+    if (Write == false)
+    {
+
+        if (preferences.getBool("Sequence1", false))
+        {
+            Sequence_Select = 1;
+        }
+
+        else if (preferences.getBool("Sequence2", false))
+        {
+            Sequence_Select = 2;
+        }
+
+        else if (preferences.getBool("Sequence3", false))
+        {
+            Sequence_Select = 3;
+        }
+
+        else if (preferences.getBool("Random", false))
+        {
+            Sequence_Select = 4;
+        }
+
+        PeriodSequence = preferences.getUChar("PeriodT", 0);
+
+    }
+
+    preferences.end();
 }
 
 void PermanentValues::getTime()
@@ -264,7 +353,8 @@ void PermanentValues::getTime()
     dayConfig[4] = preferences.getBool("Friday", 0);
     dayConfig[5] = preferences.getBool("Saturday", 0);
     dayConfig[6] = preferences.getBool("Sunday", 0);
-
+    WR_Sequence(0, 0 ,false);
+    
     preferences.end();
 }
 

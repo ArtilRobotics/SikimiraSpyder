@@ -16,8 +16,10 @@ class Actions
     enum Commands
     {
         PAUSA = 80,
-        SPIDERONE = 20,
-        SPIDERTWO = 10,
+        SPIDERONE = 1,
+        SPIDERTWO = 2,
+        SPIDERTHREE =3,
+        RANDOM =4,
         ARRIBA = 70,
         ABAJO = 66
     };
@@ -49,11 +51,13 @@ public:
     void setOFF(int datoR[3]);
     void setHigh(int dato);
     void setLow(int dato);
+    void SetSequence(int Sequence);
     void getTimesProgram();
     void PrintTimes();
     void getLevels();
     void PrintLevels();
     void setDays(int datoR[3]);
+    void SetPeriodSequence(int Period);
 
     void CheckDayStatus();
     void CheckTimer();
@@ -63,6 +67,8 @@ public:
     bool SpiderTimeState = false;
     bool SpiderDayState = false;
     bool DeviceTimeStatus;
+    int Sequence_Update();
+    int Period;
 
 private:
 };

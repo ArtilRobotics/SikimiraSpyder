@@ -141,6 +141,9 @@ bool TimeClock::Compare_Time()
     }
   }
 
+  if (datoCC[0] == 0 && datoCC[1]==0 ){ESP.restart();}
+  
+
   return Status;
   // Serial.print(datoCC[0]);
   // Serial.print(":");

@@ -12,18 +12,21 @@ String strT = "";
 const char separatorT = ',';
 const int dataLengthT = 3;
 int datoT[dataLengthT];
-
+int DemoPin = 34;
 //////////////////////////////////////////////////////
 void setup()
 {
   // put your setup code here, to run once:
 
   Serial.begin(115200);
+  pinMode(DemoPin, INPUT);
   BTS.Start();
-  WifiBT.init();
-  Acciones.init();
-  
 
+    if( digitalRead(DemoPin)==LOW){
+     WifiBT.init();
+    }
+
+  Acciones.init();
     //  WifiTime.datoTON[0] = SetValues1.ValueHourON;
     //  WifiTime.datoTON[1] = SetValues1.ValueMinON;
 
@@ -99,25 +102,24 @@ void loop()
 
     case 6:
     //WifiTime.setTimeOFF(datoT);
+     Acciones.Sequence_Update();
     datoT[0] = 0;
     break;
 
     case 7:
-    
-    //ledState=HIGH;
-    //digitalWrite(ledPin, ledState);
+    Acciones.SetPeriodSequence(datoT[1]);
+    Acciones.Sequence_Update();
     datoT[0] = 0;
     break;
 
     case 8:
-    //ledState=LOW;
-    //digitalWrite(ledPin, ledState);
-     datoT[0] = 0;
+    Acciones.CheckDayStatus();
+    datoT[0] = 0;
     break;
     
     case 9:
-    
-    Acciones.movimientos(20,2);
+    ESP.restart();
+    datoT[0] = 0;
      //datoT[0] = 0;
     break;
 

@@ -39,7 +39,7 @@ public:
     bool directionM = false;
     int n_holes = 15;
     float pi = 3.1416;
-    float radius = 0.95 / 4;
+    float radius = 0.475;
     // float radius=2.54;
     float revs = 0;
     void init3();
