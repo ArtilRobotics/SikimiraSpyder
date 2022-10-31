@@ -43,6 +43,7 @@ public:
 
     void MoveSpyder(int dato);
 
+    void TimeSync();
     void GetTimeNow();
 
     const int Switch = 35;

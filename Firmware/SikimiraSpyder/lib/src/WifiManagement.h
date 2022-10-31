@@ -7,6 +7,7 @@ class WifiManagement
 {
 public:
     void init();
+    bool WifiStatus;
 
 private:
 };

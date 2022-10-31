@@ -22,7 +22,7 @@ class TimeClock
 public:
    void init();
    void setTimezone(String timezones);
-   void initTime(String timezones);
+   void initTime();
    void printLocalTime();
    bool Compare_Time();
    void setTimeON(int dato[2]);

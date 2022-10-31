@@ -3,13 +3,21 @@
 #include <WiFi.h>
 #include "time.h"
 #include <PermanentValues.h>
+#include <ESP32Time.h>
+
+ESP32Time rtc;
+
+const char* ssid="CasaPP";
+const char* password="Casa151098#";
+const char* ntpServer = "pool.ntp.org";
+const long gmtOffset_sec=-5*3600;
+const int daylightOffset_sec=0;
 
 PermanentValues SetValues;
 
 void TimeClock::init()
 {
-  initTime("COT5"); // Set for EC
-  // initTime("LINT-14");
+  initTime();
   printLocalTime();
 }
 
@@ -20,31 +28,18 @@ void TimeClock::setTimezone(String timezone)
   tzset();
 }
 
-void TimeClock::initTime(String timezone)
+void TimeClock::initTime()
 {
+  configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
   struct tm timeinfo;
-
-  // Serial.println("Setting up time");
-  configTime(0, 0, "pool.ntp.org"); // First connect to NTP server, with 0 TZ offset
-  if (!getLocalTime(&timeinfo))
-  {
-    Serial.println("  Failed to obtain time");
-    return;
+  if (getLocalTime(&timeinfo)){
+    rtc.setTimeStruct(timeinfo); 
   }
-  // Serial.println("  Got the time from NTP");
-  //  Now we can set the real timezone
-  setTimezone(timezone);
 }
 
 void TimeClock::printLocalTime()
 {
-  struct tm timeinfo;
-  if (!getLocalTime(&timeinfo))
-  {
-    Serial.println("Failed to obtain time 1");
-    // return;
-  }
-  // Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S zone %Z %z ");
+  struct tm timeinfo = rtc.getTimeStruct();
   Serial.println(&timeinfo, "%H:%M:%S");
 }
 
@@ -103,12 +98,10 @@ boolean array_cmp(int *a, int *b, int len_a, int len_b)
 
 bool TimeClock::Compare_Time()
 {
-  struct tm timeinfo;
+  
   bool Status = false;
 
-  if (!getLocalTime(&timeinfo))
-  {
-  }
+  struct tm timeinfo = rtc.getTimeStruct();
 
   datoCC[0] = timeinfo.tm_hour;
   datoCC[1] = timeinfo.tm_min;
@@ -182,11 +175,9 @@ void TimeClock::setTimeOFF(int datoC[2])
 int TimeClock::TodayDay()
 {
 
-  struct tm timeinfo;
-  if (!getLocalTime(&timeinfo))
-  {
-  }
+  struct tm timeinfo = rtc.getTimeStruct();
 
   int Day = timeinfo.tm_wday;
   return Day;
 }
+

@@ -15,7 +15,9 @@ String stream;
 byte len = 0;
 String temp;
 String temp2;
-unsigned int interval = 10000; // Tiempo de espera
+unsigned int interval = 30000; // Tiempo de espera
+bool WifiStatus;
+int ledPinWF=22;
 
 //// Inicio de conexión WiFi por BT
 
@@ -78,9 +80,28 @@ boolean check_wifiUpdate()
 
 //// Fin de conexión WiFi por BT
 
+
+// void WiFiStationConnected(WiFiEvent_t event, WiFiEventInfo_t info){
+//   Serial.println("Connected to AP successfully!");
+// }
+
+// void WiFiGotIP(WiFiEvent_t event, WiFiEventInfo_t info){
+//   Serial.println("WiFi connected");
+//   Serial.println("IP address: ");
+//   Serial.println(WiFi.localIP());
+// }
+
+// void WiFiStationDisconnected(WiFiEvent_t event, WiFiEventInfo_t info){
+//   Serial.println("Disconnected from WiFi access point");
+//   Serial.print("WiFi lost connection. Reason: ");
+//   Serial.println(info.wifi_sta_disconnected.reason);
+//   Serial.println("Trying to Reconnect");
+//   init();
+// }
+
 void WifiManagement::init()
 {
-
+  pinMode(ledPinWF, OUTPUT);
   /////// Inicio de conexión WiFi por BT
 
   EEPROM.begin(50);
@@ -88,6 +109,7 @@ void WifiManagement::init()
   Serial.println("Bluetooth Device is Ready to Pair");
   Serial.println("Waiting For Wifi Updates 30 seconds");
   ESP_BT.begin("Sikimira"); // Name of your Bluetooth Signal
+
 
   while (!check_wifiUpdate() == true)
   {
@@ -131,17 +153,27 @@ void WifiManagement::init()
   if (WiFi.waitForConnectResult() != WL_CONNECTED)
   {
     Serial.println("WiFi Failed");
-    while (1)
-    {
-      delay(1000);
-    }
+    WifiStatus = false;
+     digitalWrite(ledPinWF, LOW);
   }
   else
   {
     Serial.print("Wifi Connected to ");
     Serial.println(ssid);
-    // digitalWrite(ledPin, HIGH);
+    digitalWrite(ledPinWF, HIGH);
+    WifiStatus = true;
   }
 
   ///////  Fin de conexión WiFi por BT
+  WiFi.setAutoReconnect(true);
+  WiFi.persistent(true);
+  WiFi.persistent(false);
+	WiFi.mode(WIFI_STA);
+  //WiFi.setSleepMode(WIFI_NONE_SLEEP);
+	WiFi.setAutoReconnect(true);
+
+  // WiFi.onEvent(WiFiStationConnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_CONNECTED);
+  // WiFi.onEvent(WiFiGotIP, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_GOT_IP);
+  // WiFi.onEvent(WiFiStationDisconnected, WiFiEvent_t::ARDUINO_EVENT_WIFI_STA_DISCONNECTED);
 }
+

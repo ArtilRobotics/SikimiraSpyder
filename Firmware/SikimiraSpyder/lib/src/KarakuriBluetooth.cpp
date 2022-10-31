@@ -2,6 +2,7 @@
 #include <Arduino.h>
 #include <Actions.h>
 #include <BluetoothSerial.h>
+#include <WiFi.h>
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
@@ -14,7 +15,7 @@ String str = "";
 const char separator = ',';
 const int dataLength = 3;
 int dato[dataLength];
-
+int cont=0;
 bool ActivityStatus = true;
 bool SliderStatus = false;
 
@@ -32,6 +33,8 @@ long previousMins = 0;
 long intervalScanTimeMin = 3;
 long previousHours = 0;
 long intervalScanTimeHour = 1;
+unsigned long previousMillis3 = 0;
+unsigned long interval3 = 30000;
 
 // long previousMillis2 = 0;
 // long intervalScan2 = 100;
@@ -59,7 +62,7 @@ void serialFlush()
 
 void KarakuriBluetooth::Update()
 {
-    if(digitalRead(DemoPin_D)==LOW){
+    if(digitalRead(DemoPin_D)==LOW || WiFi.status() != WL_CONNECTED){
 
     unsigned long currentSecs = millis()/1000;                       // Medir en Segundos
     //unsigned long currentMins = (millis()/1000)/60;                  // Medir en Minutos
@@ -82,8 +85,9 @@ void KarakuriBluetooth::Update()
 
     if (currentHours - previousHours > intervalScanTimeHour)
     {
-       // act.CheckDayStatus();
+        act.CheckDayStatus();
         previousHours = currentHours;
+        act.TimeSync();
     }
         
     }
@@ -222,7 +226,7 @@ void KarakuriBluetooth::Update()
         dato[0] = 0;
         break;
 
-       case 10:
+    case 10:
         ESP.restart();
         dato[0] = 0;
         break;
@@ -252,7 +256,7 @@ void KarakuriBluetooth::Update()
         if (act.Period>0)
         {
         unsigned long currentMins = (millis()/1000)/60;                  // Medir en Minutos
-        if (currentMins - previousMins > act.Period )
+        if (currentMins - previousMins > act.Period-1)
         {
             Serial.println("Activated Loop cada: ");
             Serial.print(act.Period);
@@ -288,4 +292,15 @@ void KarakuriBluetooth::Update()
         act.CheckLenght();
         previousTime2 = currentTime2;
     }
+
+      unsigned long currentMillis3 = millis();
+  // if WiFi is down, try reconnecting every CHECK_WIFI_TIME seconds
+  if ((WiFi.status() != WL_CONNECTED) && (digitalRead(DemoPin_D)==LOW) && (currentMillis3 - previousMillis3 >=interval3) && cont<10) {
+    Serial.println("Reconnecting to WiFi...");
+    WiFi.disconnect();
+    WiFi.reconnect();
+    previousMillis3 = currentMillis3;
+    cont++;
+  }
+
 }

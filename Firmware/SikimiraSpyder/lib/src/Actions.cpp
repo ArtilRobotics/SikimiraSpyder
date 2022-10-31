@@ -7,6 +7,7 @@
 KarakuriMotors motors;
 TimeClock WifiTime;
 PermanentValues SetValues1;
+
 int ledPin = 2;
 const int Switch = 35;
 long max_lenght = 2000;
@@ -333,6 +334,11 @@ void Actions::MoveSpyder(int dato)
     // motors.setSpeed(dato);
 }
 
+void Actions::TimeSync()
+{
+    WifiTime.initTime();
+}
+
 void Actions::GetTimeNow()
 {
     WifiTime.printLocalTime();
@@ -376,6 +382,7 @@ void Actions::getTimesProgram()
 void Actions::PrintTimes()
 {
     getTimesProgram();
+    GetTimeNow();
     Serial.print("Hora de activación: ");
     Serial.print(WifiTime.datoTON[0]);
     Serial.print(":");
