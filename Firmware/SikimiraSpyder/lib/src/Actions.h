@@ -46,7 +46,7 @@ public:
     void TimeSync();
     void GetTimeNow();
 
-    const int Switch = 35;
+    const int Switch=21;
 
     void setON(int datoR[3]);
     void setOFF(int datoR[3]);

@@ -12,14 +12,24 @@ String strT = "";
 const char separatorT = ',';
 const int dataLengthT = 3;
 int datoT[dataLengthT];
-int DemoPin = 34;
+int DemoPin = 18;
+const int ResetWfPin = 19;
+
 //////////////////////////////////////////////////////
+
+void ResetWF(){
+    Serial.println("Reset ESP");
+    ESP.restart();
+}
+
 void setup()
 {
   // put your setup code here, to run once:
 
   Serial.begin(115200);
   pinMode(DemoPin, INPUT);
+  pinMode(ResetWfPin, INPUT);
+  attachInterrupt(ResetWfPin, ResetWF, FALLING);
   BTS.Start();
 
     if( digitalRead(DemoPin)==LOW){
@@ -147,3 +157,5 @@ void loop()
   BTS.Update();
 
 }
+
+

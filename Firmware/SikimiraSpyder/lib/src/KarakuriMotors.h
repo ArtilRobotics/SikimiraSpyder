@@ -34,7 +34,7 @@ public:
     void speedSpyder(int intervalTime_input);
     static void interrupcion();
 
-    int sensor = 19; // Pin del Encoder
+    int sensor = 34; // Pin del Encoder
     float lenght;
     bool directionM = false;
     int n_holes = 15;

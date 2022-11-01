@@ -8,8 +8,8 @@ KarakuriMotors motors;
 TimeClock WifiTime;
 PermanentValues SetValues1;
 
-int ledPin = 2;
-const int Switch = 35;
+int ledPin = 23;
+const int Switch = 21;
 long max_lenght = 2000;
 int maxSpeed = 250;
 
@@ -34,8 +34,6 @@ void Actions::init()
     CheckDayStatus();
     CheckTimer();
     home();
-
-    // motors
 }
 
 void Actions::movimientos(int comando, int argument)

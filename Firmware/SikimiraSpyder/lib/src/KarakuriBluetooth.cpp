@@ -21,7 +21,7 @@ bool SliderStatus = false;
 
 // Definición de la bandera de estados del sistema
 int estado = 0;
-int DemoPin_D=34;
+int DemoPin_D=18;
 
 long previousTime = 0;
 long intervalScanTime = 2000;
@@ -231,7 +231,7 @@ void KarakuriBluetooth::Update()
         dato[0] = 0;
         break;
 
-        case 11:
+    case 11:
         act.SetPeriodSequence(dato[1]);
         act.Sequence_Update();
         dato[0] = 0;
@@ -303,4 +303,6 @@ void KarakuriBluetooth::Update()
     cont++;
   }
 
+
 }
+
