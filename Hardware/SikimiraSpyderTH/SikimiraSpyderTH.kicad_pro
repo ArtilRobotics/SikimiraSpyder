@@ -119,7 +119,9 @@
         "use_height_for_length_calcs": true
       },
       "track_widths": [
-        0.0
+        0.0,
+        1.016,
+        2.54
       ],
       "via_dimensions": [
         {
@@ -346,7 +348,7 @@
     "pinned_symbol_libs": []
   },
   "meta": {
-    "filename": "KaraKuriTH.kicad_pro",
+    "filename": "SikimiraSpyderTH.kicad_pro",
     "version": 1
   },
   "net_settings": {
@@ -381,12 +383,7 @@
         "nets": [
           "+5V",
           "+BATT",
-          "GND",
-          "M_L+",
-          "M_L-",
-          "M_R+",
-          "M_R-",
-          "Net-(Batt1-Pad1)"
+          "GND"
         ],
         "pcb_color": "rgba(0, 0, 0, 0.000)",
         "schematic_color": "rgba(0, 0, 0, 0.000)",

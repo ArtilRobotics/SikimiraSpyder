@@ -1,0 +1,5 @@
+(fp_lib_table
+  (lib (name "TB6612FNG")(type "KiCad")(uri "/Users/henrypurun/Documents/KiCad/6.0/footprints/TB6612FNG Motor")(options "")(descr ""))
+  (lib (name "ESP32")(type "KiCad")(uri "/Users/henrypurun/Documents/KiCad/6.0/footprints/doit-esp32-devkit-kicad-master")(options "")(descr ""))
+  (lib (name "ESP32_30PIN")(type "KiCad")(uri "/Users/henrypurun/Documents/KiCad/6.0/footprints/ESP32-DEVKITC-32D")(options "")(descr ""))
+)

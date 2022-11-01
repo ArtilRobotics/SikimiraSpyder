@@ -1,0 +1,4 @@
+(sym_lib_table
+  (lib (name "Driver Motor TB6612")(type "Legacy")(uri "/Users/henrypurun/Documents/KiCad/6.0/symbols/TB6612FNG Motor.lib")(options "")(descr ""))
+  (lib (name "ESP32")(type "Legacy")(uri "/Users/henrypurun/Documents/KiCad/6.0/symbols/doit-esp32-devkit-kicad-master/doit-esp32-devkit-v1.lib")(options "")(descr ""))
+)
