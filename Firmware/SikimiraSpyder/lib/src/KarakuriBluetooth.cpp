@@ -2,7 +2,6 @@
 #include <Arduino.h>
 #include <Actions.h>
 #include <BluetoothSerial.h>
-#include <WiFi.h>
 
 #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
 #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
@@ -39,6 +38,9 @@ unsigned long interval3 = 30000;
 // long previousMillis2 = 0;
 // long intervalScan2 = 100;
 
+ act.SpiderDayState=true;
+ act.DeviceTimeStatus=true;
+
 ///////////////////////
 
 void KarakuriBluetooth::Start()
@@ -62,39 +64,9 @@ void serialFlush()
 
 void KarakuriBluetooth::Update()
 {
-    if(digitalRead(DemoPin_D)==LOW || WiFi.status() != WL_CONNECTED){
+    
+       
 
-    unsigned long currentSecs = millis()/1000;                       // Medir en Segundos
-    //unsigned long currentMins = (millis()/1000)/60;                  // Medir en Minutos
-    unsigned long currentHours = ((millis() / 1000) / 60) / 60; // Medir en Horas
-
-    if (currentSecs - previousSecs > intervalScanTimeSecs)
-    {
-        act.GetTimeNow();
-        act.CheckTimer();
-        act.CheckDayStatus();
-        Serial.print("SliderStatus: ");
-        Serial.print(SliderStatus);
-        Serial.print(" - SpiderDayState: ");
-        Serial.print(act.SpiderDayState);
-        Serial.print(" - DeviceTimeStatus: ");
-        Serial.println(act.DeviceTimeStatus);
-        previousSecs = currentSecs;
-    }
-
-
-    if (currentHours - previousHours > intervalScanTimeHour)
-    {
-        act.CheckDayStatus();
-        previousHours = currentHours;
-        act.TimeSync();
-    }
-        
-    }
-    else{
-        act.SpiderDayState=true;
-        act.DeviceTimeStatus=true;
-    }
     
 
     str = "";
@@ -294,14 +266,6 @@ void KarakuriBluetooth::Update()
     }
 
       unsigned long currentMillis3 = millis();
-  // if WiFi is down, try reconnecting every CHECK_WIFI_TIME seconds
-  if ((WiFi.status() != WL_CONNECTED) && (digitalRead(DemoPin_D)==LOW) && (currentMillis3 - previousMillis3 >=interval3) && cont<10) {
-    Serial.println("Reconnecting to WiFi...");
-    WiFi.disconnect();
-    WiFi.reconnect();
-    previousMillis3 = currentMillis3;
-    cont++;
-  }
 
 
 }
