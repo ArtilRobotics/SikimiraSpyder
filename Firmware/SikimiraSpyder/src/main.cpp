@@ -6,7 +6,6 @@
 
 Actions Acciones;
 KarakuriBluetooth BTS;
-WifiManagement WifiBT;
 
 String strT = "";
 const char separatorT = ',';
@@ -31,10 +30,6 @@ void setup()
   pinMode(ResetWfPin, INPUT);
   attachInterrupt(ResetWfPin, ResetWF, FALLING);
   BTS.Start();
-
-    if( digitalRead(DemoPin)==LOW){
-     WifiBT.init();
-    }
 
   Acciones.init();
     //  WifiTime.datoTON[0] = SetValues1.ValueHourON;
