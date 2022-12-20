@@ -46,27 +46,27 @@ public:
     void TimeSync();
     void GetTimeNow();
 
-    const int Switch=21;
+    const int Switch=12;
 
-    void setON(int datoR[3]);
-    void setOFF(int datoR[3]);
+    // void setON(int datoR[3]);
+    // void setOFF(int datoR[3]);
     void setHigh(int dato);
     void setLow(int dato);
     void SetSequence(int Sequence);
-    void getTimesProgram();
-    void PrintTimes();
+    // void getTimesProgram();
+    // // void PrintTimes();
     void getLevels();
     void PrintLevels();
-    void setDays(int datoR[3]);
+    // void setDays(int datoR[3]);
     void SetPeriodSequence(int Period);
 
-    void CheckDayStatus();
-    void CheckTimer();
+    // void CheckDayStatus();
+    // void CheckTimer();
 
     void MovingLoop();
 
-    bool SpiderTimeState = false;
-    bool SpiderDayState = false;
+    bool SpiderTimeState = true;
+    bool SpiderDayState = true;
     bool DeviceTimeStatus;
     int Sequence_Update();
     int Period;

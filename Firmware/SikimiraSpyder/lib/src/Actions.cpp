@@ -1,19 +1,19 @@
 #include <Arduino.h>
 #include "Actions.h"
 #include <KarakuriMotors.h>
-#include <TimeClock.h>
+//#include <TimeClock.h>
 #include <PermanentValues.h>
 
 KarakuriMotors motors;
-TimeClock WifiTime;
+//TimeClock WifiTime;
 PermanentValues SetValues1;
 
-int ledPin = 23;
-const int Switch = 21;
+int ledPin = 13;
+const int Switch = 12;
 long max_lenght = 2000;
 int maxSpeed = 250;
 
-bool DeviceTimeStatus = false; // Variable para activar o no el movimiento automático
+bool DeviceTimeStatus = true; // Variable para activar o no el movimiento automático
 
 long previousMillis = 0;
 long intervalScan = 50;
@@ -24,15 +24,15 @@ int Sequence_Now;
 
 void Actions::init()
 {
-    WifiTime.init();
+    //WifiTime.init();
     pinMode(Switch, INPUT);
     // pinMode(Encoder, INPUT);
     pinMode(ledPin, OUTPUT);
     motors.init3();
-    getTimesProgram();
+    //getTimesProgram();
     getLevels();
-    CheckDayStatus();
-    CheckTimer();
+    //CheckDayStatus();
+    //CheckTimer();
     home();
 }
 
@@ -237,13 +237,13 @@ void Actions::home()
         {
         }
 
-        motors.setSpeed(0);
+        motors.setSpeed(-10);
         Serial.println("Button Push");
     }
 
     motors.setSpeed(10);
     delay(1000);
-    motors.setSpeed(0);
+    motors.setSpeed(10);
     motors.lenght = 0;
     delay(500);
     adelante(0,10);
@@ -253,7 +253,7 @@ void Actions::CheckLenght()
 {
     if ((motors.lenght <= 0 && motors.directionM == false) || digitalRead(Switch) == LOW)
     {
-        motors.setSpeed(0);
+        motors.setSpeed(10);
         motors.lenght = 0;
 
             home();
@@ -261,7 +261,7 @@ void Actions::CheckLenght()
 
     else if (motors.lenght > max_lenght && motors.directionM)
     {
-        motors.setSpeed(0);
+        motors.setSpeed(10);
     }
 }
 
@@ -332,98 +332,6 @@ void Actions::MoveSpyder(int dato)
     // motors.setSpeed(dato);
 }
 
-void Actions::TimeSync()
-{
-    WifiTime.initTime();
-}
-
-void Actions::GetTimeNow()
-{
-    WifiTime.printLocalTime();
-}
-
-void Actions::setON(int datoR[3])
-{
-
-    int datoS[2];
-
-    datoS[0] = datoR[1];
-    datoS[1] = datoR[2];
-
-    WifiTime.setTimeON(datoS);
-}
-
-void Actions::setOFF(int datoR[3])
-{
-
-    int datoS[2];
-
-    datoS[0] = datoR[1];
-    datoS[1] = datoR[2];
-
-    WifiTime.setTimeOFF(datoS);
-}
-
-void Actions::getTimesProgram()
-{
-    //    SetValues1.WR_time(true, 0,0,false);
-    //    SetValues1.WR_time(false, 0,0,false);
-
-    SetValues1.getTime();
-
-    WifiTime.datoTON[0] = SetValues1.ValueHourON;
-    WifiTime.datoTON[1] = SetValues1.ValueMinON;
-    WifiTime.datoTOFF[0] = SetValues1.ValueHourOFF;
-    WifiTime.datoTOFF[1] = SetValues1.ValueMinOFF;
-}
-
-void Actions::PrintTimes()
-{
-    getTimesProgram();
-    GetTimeNow();
-    Serial.print("Hora de activación: ");
-    Serial.print(WifiTime.datoTON[0]);
-    Serial.print(":");
-    Serial.println(WifiTime.datoTON[1]);
-
-    Serial.print("Hora de desactivación: ");
-    Serial.print(WifiTime.datoTOFF[0]);
-    Serial.print(":");
-    Serial.println(WifiTime.datoTOFF[1]);
-
-    Serial.print("Dias de activación: ");
-    Serial.print("L");
-    Serial.print(":");
-    Serial.print(SetValues1.dayConfig[0]);
-    Serial.print("-");
-    Serial.print("M");
-    Serial.print(":");
-    Serial.print(SetValues1.dayConfig[1]);
-    Serial.print("-");
-    Serial.print("W");
-    Serial.print(":");
-    Serial.print(SetValues1.dayConfig[2]);
-    Serial.print("-");
-    Serial.print("J");
-    Serial.print(":");
-    Serial.print(SetValues1.dayConfig[3]);
-    Serial.print("-");
-    Serial.print("V");
-    Serial.print(":");
-    Serial.print(SetValues1.dayConfig[4]);
-    Serial.print("-");
-    Serial.print("S");
-    Serial.print(":");
-    Serial.print(SetValues1.dayConfig[5]);
-    Serial.print("-");
-    Serial.print("D");
-    Serial.print(":");
-    Serial.println(SetValues1.dayConfig[6]);
-
-    Serial.print("Secuencia Activada: ");
-    Serial.println(SetValues1.Sequence_Select);
-}
-
 void Actions::setHigh(int datoR)
 {
 
@@ -454,76 +362,6 @@ void Actions::PrintLevels()
     Serial.println(motors.lenght);
 }
 
-void Actions::setDays(int datoR[3])
-{
-    bool SetValue;
-
-    if (datoR[2] == 1)
-    {
-        SetValue = true;
-    }
-    else if (datoR[2] == 0)
-    {
-        SetValue = false;
-    }
-
-    SetValues1.WR_day(datoR[1], SetValue, true);
-}
-
-void Actions::CheckDayStatus()
-{
-    //Serial.print("Today is: ");
-    //Serial.println(WifiTime.TodayDay());
-    SetValues1.WR_day(WifiTime.TodayDay(), 0, false);
-    SpiderDayState = SetValues1.dayStatus;
-    //if(SpiderDayState==true){Serial.println("Today Spider Activate");}
-    
-}
-
-void Actions::CheckTimer()
-{ // Funcion para verificar el horario de activacion
-    getTimesProgram();
-    // Falta agregregar la funcion para comprobar el dia y que este active o no  la varibale DeviceTimeStatus
-    // Agregar como funcion de verificacion dentro de la libreria TimeClock
-
-    if (DeviceTimeStatus == false)
-    {
-
-        ///////////////////////////////////////////
-        Serial.println("DeviceTimeStatus = false");
-        Serial.print("TimeON:");
-        Serial.print(WifiTime.datoTON[0]);
-        Serial.print(":");
-        Serial.println(WifiTime.datoTON[1]);
-        /////////////////////////////////////////////
-        if (WifiTime.Compare_Time() == true)
-        {
-            Serial.println("Actvivated");
-            DeviceTimeStatus = true;
-            // home();
-        };
-    }
-
-    else if (DeviceTimeStatus == true)
-    {
-
-        ///////////////////////////////////////////
-        Serial.println("DeviceTimeStatus = true");
-        Serial.print("TimeOFF:");
-        Serial.print(WifiTime.datoTOFF[0]);
-        Serial.print(":");
-        Serial.println(WifiTime.datoTOFF[1]);
-        /////////////////////////////////////////////
-        if (WifiTime.Compare_Time() == false)
-        {
-            Serial.println("Desactvivated");
-            DeviceTimeStatus = false;
-            home();
-        };
-    }
-
-    digitalWrite(ledPin, DeviceTimeStatus);
-}
 
 void Actions::SetSequence(int Sequence){
         SetValues1.WR_Sequence(Sequence, 0, true);
@@ -532,8 +370,6 @@ void Actions::SetSequence(int Sequence){
 void Actions::SetPeriodSequence(int Period){
         SetValues1.WR_Sequence(0, Period, true);
     }
-
-
 
 void Actions::MovingLoop()
 {

@@ -2,7 +2,7 @@
 #include <KarakuriMotors.h>
 #include <KarakuriBluetooth.h>
 #include <Actions.h>
-#include <WifiManagement.h>
+//#include <WifiManagement.h>
 
 Actions Acciones;
 KarakuriBluetooth BTS;
@@ -16,10 +16,10 @@ const int ResetWfPin = 19;
 
 //////////////////////////////////////////////////////
 
-void ResetWF(){
-    Serial.println("Reset ESP");
-    ESP.restart();
-}
+// void ResetWF(){
+//     Serial.println("Reset ESP");
+//     ESP.restart();
+// }
 
 void setup()
 {
@@ -27,16 +27,8 @@ void setup()
 
   Serial.begin(115200);
   pinMode(DemoPin, INPUT);
-  pinMode(ResetWfPin, INPUT);
-  attachInterrupt(ResetWfPin, ResetWF, FALLING);
   BTS.Start();
-
   Acciones.init();
-    //  WifiTime.datoTON[0] = SetValues1.ValueHourON;
-    //  WifiTime.datoTON[1] = SetValues1.ValueMinON;
-
-    //  WifiTime.datoTOFF[0] = SetValues1.ValueHourOFF;
-    //  WifiTime.datoTOFF[1] =  SetValues1.ValueMinOFF;
 
 }
 
@@ -61,7 +53,10 @@ void loop()
     }
     for (int i = 0; i < dataLengthT; i++)
     {
-      Serial.printf("Dato %d = %d  ", i, datoT[i]);
+      Serial.print("Dato "); 
+      Serial.print(i);
+      Serial.print("="); 
+      Serial.print(datoT[i]);
     }
     Serial.println(" ");
   }
@@ -79,9 +74,7 @@ void loop()
 
   case 2:
     
-    //Serial.println(datoT[1]);
     Acciones.MoveSpyder(datoT[1]);
-
 
     datoT[0] = 0;
     break;
@@ -100,13 +93,13 @@ void loop()
     break;
 
     case 5:
-    //WifiTime.setTimeON(datoT);
+
     datoT[0] = 0;
 
     break;
 
     case 6:
-    //WifiTime.setTimeOFF(datoT);
+
      Acciones.Sequence_Update();
     datoT[0] = 0;
     break;
@@ -118,23 +111,19 @@ void loop()
     break;
 
     case 8:
-    Acciones.CheckDayStatus();
+
     datoT[0] = 0;
     break;
     
     case 9:
-    ESP.restart();
-    datoT[0] = 0;
+    // ESP.restart();
+    // datoT[0] = 0;
      //datoT[0] = 0;
     break;
 
     case 10:
-   // Serial.print("Longitud motors1.directionM: ");
-    //Serial.println(motors1.directionM);
 
-        Acciones.getTimesProgram();
         Acciones.getLevels();
-        Acciones.PrintTimes();
         Acciones.PrintLevels();
         
 
@@ -144,7 +133,6 @@ void loop()
     default:
     // colocar movimientos pero en cada instante
     Serial.println("Sistema tele operado");
-    // act.tele((int)dato[1]);
     datoT[0] = 0;
 
   }

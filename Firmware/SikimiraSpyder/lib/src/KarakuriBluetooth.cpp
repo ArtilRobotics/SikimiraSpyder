@@ -1,14 +1,17 @@
 #include <KarakuriBluetooth.h>
 #include <Arduino.h>
 #include <Actions.h>
-#include <BluetoothSerial.h>
+//#include <BluetoothSerial.h>
 
-#if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
-#error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
-#endif
+#include <SoftwareSerial.h>
+SoftwareSerial BT(8, 9); // RX | TX
+
+// #if !defined(CONFIG_BT_ENABLED) || !defined(CONFIG_BLUEDROID_ENABLED)
+// #error Bluetooth is not enabled! Please run `make menuconfig` to and enable it
+// #endif
 
 Actions act;
-BluetoothSerial BT;
+//BluetoothSerial BT;
 // variables para la comunicación usando función
 String str = "";
 const char separator = ',';
@@ -20,8 +23,6 @@ bool SliderStatus = false;
 
 // Definición de la bandera de estados del sistema
 int estado = 0;
-int DemoPin_D=18;
-
 long previousTime = 0;
 long intervalScanTime = 2000;
 long previousTime2 = 0;
@@ -38,14 +39,14 @@ unsigned long interval3 = 30000;
 // long previousMillis2 = 0;
 // long intervalScan2 = 100;
 
- act.SpiderDayState=true;
- act.DeviceTimeStatus=true;
+//  act.SpiderDayState=true;
+//  act.DeviceTimeStatus=true;
 
 ///////////////////////
 
 void KarakuriBluetooth::Start()
 {
-    BT.begin("Sikimira");
+    // BT.begin("Sikimira");
     BT.begin(115200);
     Serial.println("BT iniciado");
     int Secuencia_act=act.Sequence_Update();
@@ -82,7 +83,10 @@ void KarakuriBluetooth::Update()
         }
         for (int i = 0; i < dataLength; i++)
         {
-            Serial.printf("Dato %d = %d  ", i, dato[i]);
+            Serial.print("Dato "); 
+            Serial.print(i);
+            Serial.print("="); 
+            Serial.print(dato[i]);
         }
         Serial.println(" ");
     }
@@ -120,45 +124,17 @@ void KarakuriBluetooth::Update()
 
     case 4:
 
-        Serial.print("Time recieved: ");
-        Serial.print(dato[1]);
-        Serial.print(":");
-        Serial.print(dato[2]);
-
-        act.setON(dato);
+       
         dato[0] = 0;
         break;
 
     case 5:
-        Serial.print("Time recieved: ");
-        Serial.print(dato[1]);
-        Serial.print(":");
-        Serial.print(dato[2]);
-
-        act.setOFF(dato);
+       
         dato[0] = 0;
         break;
 
     case 6: // Setear dias Activos
-        // El contenido de entrada serial es del tipo: 6,domingo,true
-        // Es mejor opcion cambiar al tipo de formato: 6,6,1;
-        // Para poder usar correctamente la funcion PermanentValues::WR_day
-
-        // //usar el formato para los dos valores siguientes del Serial de esta forma:
-        // Lunes = 0
-        // Martes = 1
-        // Miercoles = 2
-        // Jueves = 3
-        // Viernes = 4
-        // Sabado = 5
-        // Domingo = 6
-
-        // El tercer valor corresponde a el booleano true = 1 y false =  0
-
-        act.setDays(dato); // FUNCION ORIGINAL
-
-        // act.atras(0); //Prueba de conteo
-        // act.movimientos(20,2);
+        
         dato[0] = 0;
 
         break;
@@ -179,7 +155,7 @@ void KarakuriBluetooth::Update()
     case 8: //set Sequence
 
         act.SetSequence(dato[1]);
-        act.PrintTimes();
+        // act.PrintTimes();
         dato[0] = 0;
 
         break;
@@ -199,7 +175,7 @@ void KarakuriBluetooth::Update()
         break;
 
     case 10:
-        ESP.restart();
+        // ESP.restart();
         dato[0] = 0;
         break;
 
